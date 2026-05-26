@@ -817,30 +817,6 @@ section#testimonials {
   margin-top: 10px;
   margin-bottom: 0;
 }
-#contact {
-  padding-top: var(--main-padding);
-  padding-bottom: var(--main-padding);
-  background-color: var(--lite-background);
-}
-#contact main {
-  gap: 40px;
-  display: grid;
-  justify-items: center;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-}
-#contact .box {
-  padding: 20px;
-  max-width: 360px;
-  position: relative;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px #0000003d;
-  background-color: var(--regular-background);
-}
-#contact .box span {
-  color: #777;
-  display: block;
-  margin-bottom: 10px;
-}
 #authorship {
   padding-top: var(--main-padding);
   padding-bottom: var(--main-padding);
@@ -875,9 +851,10 @@ section#testimonials {
   margin-bottom: 0;
 }
 #authorship .box section {
-  display: flex;
   gap: 20px;
+  display: flex;
   flex-wrap: wrap;
+  margin-top: 20px;
   justify-content: center;
 }
 #authorship .box section a {
@@ -888,22 +865,46 @@ section#testimonials {
   transition: var(--main-transition);
 }
 #authorship .box section a.soon {
-  pointer-events: none;
   color: #777;
+  position: relative;
+  pointer-events: none;
   border-color: #777;
 }
 #authorship .box section a.soon::before {
   top: 50%;
   left: 50%;
-  display: block;
+  width: 100%;
+  height: 100%;
   content: "Soon!";
-  padding: 30% 33%;
-  font-weight: bold;
   position: absolute;
   text-align: center;
   font-size: xx-large;
+  border-radius: inherit;
   background-color: #ffffffb3;
   transform: translateX(-50%) translateY(-50%);
+}
+#contact {
+  padding-top: var(--main-padding);
+  padding-bottom: var(--main-padding);
+  background-color: var(--lite-background);
+}
+#contact main {
+  gap: 40px;
+  display: grid;
+  justify-items: center;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+#contact .box {
+  padding: 20px;
+  max-width: 360px;
+  position: relative;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px #0000003d;
+  background-color: var(--regular-background);
+}
+#contact .box span {
+  color: #777;
+  margin-bottom: 10px;
 }
 /* Animation */
 @keyframes up-and-down {
