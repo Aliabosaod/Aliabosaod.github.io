@@ -880,12 +880,30 @@ section#testimonials {
   flex-wrap: wrap;
   justify-content: center;
 }
-#authorship .box section a.story {
+#authorship .box section a {
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
   background-color: var(--regular-background);
   transition: var(--main-transition);
+}
+#authorship .box section a.soon {
+  pointer-events: none;
+  color: #777;
+  border-color: #777;
+}
+#authorship .box section a.soon::before {
+  top: 50%;
+  left: 50%;
+  display: block;
+  content: "Soon!";
+  padding: 30% 33%;
+  font-weight: bold;
+  position: absolute;
+  text-align: center;
+  font-size: xx-large;
+  background-color: #ffffffb3;
+  transform: translateX(-50%) translateY(-50%);
 }
 /* Animation */
 @keyframes up-and-down {
