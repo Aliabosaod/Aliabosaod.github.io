@@ -841,6 +841,52 @@ section#testimonials {
   display: block;
   margin-bottom: 10px;
 }
+#authorship {
+  padding-top: var(--main-padding);
+  padding-bottom: var(--main-padding);
+  background-color: var(--regular-background);
+}
+#authorship main {
+  gap: 40px;
+  display: grid;
+  justify-items: center;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+#authorship .box {
+  padding: 20px;
+  max-width: 360px;
+  position: relative;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px #0000003d;
+  background-color: var(--lite-background);
+}
+#authorship .box h3 {
+  margin: 0 0 10px;
+  color: var(--main-color);
+}
+#authorship .box a {
+  color: var(--main-color);
+  font-weight: bold;
+}
+#authorship .box p {
+  line-height: 1.5;
+  color: #4e4e4e;
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+#authorship .box section {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+#authorship .box section a.story {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: var(--regular-background);
+  transition: var(--main-transition);
+}
 /* Animation */
 @keyframes up-and-down {
   0%, 100% {
