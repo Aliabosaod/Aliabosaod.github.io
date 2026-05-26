@@ -588,8 +588,8 @@ section#experiences {
 }
 #experiences #experiences-line {
   width: 4px;
-  height: 850px;
-  border-radius: 6px;
+  height: 1300px;
+  border-radius: 50%;
   background-color: black;
 }
 #experiences #experiences-list {
@@ -598,10 +598,12 @@ section#experiences {
   flex-direction: column;
 }
 #experiences .experiences-box {
+  display: flex;
   padding: 20px;
   max-width: 360px;
   position: relative;
   border-radius: 6px;
+  flex-direction: column;
   box-shadow: 0 2px 4px #0000003d;
   background-color: var(--lite-background);
 }
@@ -615,6 +617,9 @@ section#experiences {
   position: absolute;
   border-radius: 50%;
   background-color: black;
+}
+#experiences .experiences-box h3 {
+  margin: 10px 0;
 }
 #experiences .experiences-box p {
   max-height: 55px;
@@ -778,6 +783,41 @@ section#testimonials {
   margin-top: 10px;
   margin-bottom: 0;
 }
+#habits {
+  padding-top: var(--main-padding);
+  padding-bottom: var(--main-padding);
+  background-color: var(--lite-background);
+}
+#habits main {
+  gap: 40px;
+  display: grid;
+  justify-items: center;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+#habits .box {
+  padding: 20px;
+  max-width: 360px;
+  position: relative;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px #0000003d;
+  background-color: var(--regular-background);
+}
+#habits .box h3 {
+  margin: 0 0 10px;
+  color: var(--main-color);
+}
+#habits .box span {
+  color: #777;
+  display: block;
+  margin-bottom: 10px;
+}
+#habits .box p {
+  line-height: 1.5;
+  color: #4e4e4e;
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
 /* Animation */
 @keyframes up-and-down {
   0%, 100% {
