@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOTTE — A Pizzeria for the Hours After Midnight</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- GSAP Core -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<!-- GSAP ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<!-- Lenis Smooth Scroll -->
+<script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bg: '#0B0B0C',
+          bg2: '#151210',
+          ink: '#F2ECE2',
+          inkdim: '#9C9187',
+          orange: '#FF6A3D',
+          red: '#E8352A',
+          basil: '#6FB55A',
+        },
+        fontFamily: {
+          display: ['Unbounded', 'sans-serif'],
+          body: ['Inter', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  :root{
+    --bg:#0B0B0C;
+    --bg2:#151210;
+    --ink:#F2ECE2;
+    --inkdim:#9C9187;
+    --orange:#FF6A3D;
+    --red:#E8352A;
+    --basil:#6FB55A;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ background:var(--bg); color:var(--ink); overflow-x:hidden; }
+  body{ font-family:'Inter',sans-serif; cursor:default; }
+
+  ::selection{ background:var(--orange); color:#0B0B0C; }
+  ::-webkit-scrollbar{ width:0; height:0; }
+
+  .grain{
+    position:fixed; inset:0; z-index:60; pointer-events:none; opacity:.035; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .vignette{
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background: radial-gradient(ellipse at 50% 100%, rgba(255,106,61,0.10), transparent 55%),
+                radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0.6), transparent 60%);
+  }
+
+  .eyebrow{ letter-spacing:.28em; }
+
+  .glow-orange{ filter: drop-shadow(0 0 24px rgba(255,106,61,.55)); }
+  .glow-red{ filter: drop-shadow(0 0 24px rgba(232,53,42,.5)); }
+  .glow-basil{ filter: drop-shadow(0 0 22px rgba(111,181,90,.5)); }
+
+  .ingredient{
+    position:absolute; will-change:transform; pointer-events:none;
+    transform-style:preserve-3d;
+  }
+
+  .card{
+    background: linear-gradient(160deg, rgba(255,255,255,0.045), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(2px);
+  }
+
+  .card-tilt{ transform-style:preserve-3d; will-change:transform; }
+
+  .hr-line{ background:linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent); height:1px; }
+
+  .toss-pin{ position:relative; height:100vh; overflow:hidden; }
+
+  .toss-text{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; opacity:0; }
+
+  .btn-neon{
+    position:relative; overflow:hidden;
+  }
+  .btn-neon::before{
+    content:''; position:absolute; inset:0; background:linear-gradient(90deg, var(--orange), var(--red));
+    z-index:-1; transition:opacity .4s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+</style>
+</head>
+<body class="bg-bg text-ink font-body antialiased">
+
+<div class="grain"></div>
+<div class="vignette"></div>
+
+<!-- NAV -->
+<nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 mix-blend-difference">
+  <a href="#" class="font-display font-800 text-lg tracking-wide text-ink">NOTTE</a>
+  <div class="hidden md:flex items-center gap-8 font-mono text-xs eyebrow text-inkdim">
+    <a href="#toss" class="hover:text-orange transition-colors">THE&nbsp;TOSS</a>
+    <a href="#menu" class="hover:text-orange transition-colors">MENU</a>
+    <a href="#visit" class="hover:text-orange transition-colors">VISIT</a>
+  </div>
+  <div class="font-mono text-xs text-inkdim">LAST&nbsp;ORDER&nbsp;02:00</div>
+</nav>
+
+<!-- HERO -->
+<header id="hero" class="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
+
+  <!-- floating ingredients (simulated 3D via transparent SVG + GSAP transforms) -->
+  <img data-float data-depth="0.6" class="ingredient w-24 md:w-32 glow-red" style="top:18%; left:8%;"
+    src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cdefs%3E%3CradialGradient id='p' cx='35%25' cy='32%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='%23ff9a70'/%3E%3Cstop offset='55%25' stop-color='%23e8452c'/%3E%3Cstop offset='100%25' stop-color='%238e1f16'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='100' cy='100' r='88' fill='url(%23p)'/%3E%3Cellipse cx='100' cy='100' rx='88' ry='88' fill='none' stroke='%236b140d' stroke-width='4' opacity='.4'/%3E%3Cg fill='%237a1810' opacity='.55'%3E%3Ccircle cx='68' cy='58' r='9'/%3E%3Ccircle cx='128' cy='72' r='7'/%3E%3Ccircle cx='118' cy='128' r='10'/%3E%3Ccircle cx='62' cy='120' r='6'/%3E%3Ccircle cx='95' cy='95' r='5'/%3E%3C/g%3E%3C/svg%3E"
+    alt="pepperoni">
+
+  <img data-float data-depth="1.1" class="ingredient w-16 md:w-20 glow-basil" style="top:12%; right:10%;"
+    src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2394d67a'/%3E%3Cstop offset='100%25' stop-color='%234f8a3a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M100 10 C150 30 180 80 160 130 C140 180 90 190 60 170 C20 145 20 90 50 55 C65 38 82 20 100 10 Z' fill='url(%23g)'/%3E%3Cpath d='M100 20 C95 70 95 130 90 180' stroke='%23315e24' stroke-width='4' fill='none' opacity='.6'/%3E%3C/svg%3E"
+    alt="basil leaf">
+
+  <img data-float data-depth="0.8" class="ingredient w-28 md:w-36 glow-orange" style="bottom:16%; left:12%;"
+    src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 140'%3E%3Cdefs%3E%3ClinearGradient id='f' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ffd27a'/%3E%3Cstop offset='100%25' stop-color='%23e8952e'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='url(%23f)'%3E%3Crect x='20' y='30' width='16' height='95' rx='6' transform='rotate(-8 28 77)'/%3E%3Crect x='50' y='15' width='16' height='110' rx='6' transform='rotate(-3 58 70)'/%3E%3Crect x='82' y='10' width='16' height='118' rx='6'/%3E%3Crect x='114' y='16' width='16' height='110' rx='6' transform='rotate(4 122 71)'/%3E%3Crect x='146' y='30' width='16' height='95' rx='6' transform='rotate(9 154 77)'/%3E%3Crect x='176' y='40' width='16' height='82' rx='6' transform='rotate(14 184 81)'/%3E%3C/g%3E%3C/svg%3E"
+    alt="fries">
+
+  <img data-float data-depth="1.3" class="ingredient w-14 md:w-16 glow-red" style="bottom:22%; right:14%;"
+    src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Cg fill='%23e8352a'%3E%3Cpolygon points='20,10 34,60 6,60'/%3E%3Cpolygon points='60,30 76,72 46,72'/%3E%3Cpolygon points='100,5 116,58 86,58'/%3E%3Cpolygon points='40,90 56,140 26,140'/%3E%3Cpolygon points='90,100 108,150 74,150'/%3E%3Cpolygon points='130,60 146,110 116,110'/%3E%3C/g%3E%3C/svg%3E"
+    alt="chili flakes">
+
+  <img data-float data-depth="0.5" class="ingredient w-16 md:w-20 glow-basil" style="top:40%; left:22%;"
+    src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Cellipse cx='80' cy='80' rx='60' ry='42' fill='%232f4d20'/%3E%3Cellipse cx='80' cy='80' rx='60' ry='42' fill='none' stroke='%236fb55a' stroke-width='6'/%3E%3Cellipse cx='80' cy='80' rx='16' ry='11' fill='%230B0B0C'/%3E%3C/svg%3E"
+    alt="olive slice">
+
+  <div class="relative z-10 text-center max-w-3xl">
+    <p class="eyebrow font-mono text-xs md:text-sm text-orange mb-6">WOOD-FIRED &middot; AFTER DARK</p>
+    <h1 class="font-display font-900 text-[16vw] md:text-[9rem] leading-[0.85] tracking-tight text-ink">NOTTE</h1>
+    <p class="mt-8 text-base md:text-lg text-inkdim max-w-md mx-auto">
+      A pizzeria for the hours after midnight. Dough rests eight hours. The oven doesn't rest at all.
+    </p>
+    <div class="mt-10 flex items-center justify-center gap-4">
+      <a href="#menu" class="btn-neon inline-block px-7 py-3 rounded-full font-mono text-xs eyebrow text-bg bg-orange hover:brightness-110 transition">SEE THE MENU</a>
+      <a href="#visit" class="inline-block px-7 py-3 rounded-full font-mono text-xs eyebrow border border-white/15 text-ink hover:border-orange/60 transition">RESERVE A TABLE</a>
+    </div>
+  </div>
+
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 font-mono text-[10px] text-inkdim eyebrow">SCROLL</div>
+</header>
+
+<!-- THE TOSS — signature pinned scroll sequence -->
+<section id="toss" class="relative bg-bg2" style="height:300vh;">
+  <div class="toss-pin">
+
+    <img data-toss data-arc="0" class="ingredient w-24 md:w-32 glow-red" style="top:50%; left:50%;"
+      src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cdefs%3E%3CradialGradient id='p2' cx='35%25' cy='32%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='%23ff9a70'/%3E%3Cstop offset='55%25' stop-color='%23e8452c'/%3E%3Cstop offset='100%25' stop-color='%238e1f16'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='100' cy='100' r='88' fill='url(%23p2)'/%3E%3Cg fill='%237a1810' opacity='.55'%3E%3Ccircle cx='68' cy='58' r='9'/%3E%3Ccircle cx='128' cy='72' r='7'/%3E%3Ccircle cx='118' cy='128' r='10'/%3E%3Ccircle cx='62' cy='120' r='6'/%3E%3C/g%3E%3C/svg%3E" alt="">
+
+    <img data-toss data-arc="1" class="ingredient w-16 md:w-20 glow-basil" style="top:50%; left:50%;"
+      src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cdefs%3E%3ClinearGradient id='g2' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2394d67a'/%3E%3Cstop offset='100%25' stop-color='%234f8a3a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M100 10 C150 30 180 80 160 130 C140 180 90 190 60 170 C20 145 20 90 50 55 C65 38 82 20 100 10 Z' fill='url(%23g2)'/%3E%3C/svg%3E" alt="">
+
+    <img data-toss data-arc="2" class="ingredient w-14 md:w-16 glow-red" style="top:50%; left:50%;"
+      src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Cg fill='%23e8352a'%3E%3Cpolygon points='20,10 34,60 6,60'/%3E%3Cpolygon points='60,30 76,72 46,72'/%3E%3Cpolygon points='100,5 116,58 86,58'/%3E%3Cpolygon points='40,90 56,140 26,140'/%3E%3C/g%3E%3C/svg%3E" alt="">
+
+    <img data-toss data-arc="3" class="ingredient w-16 md:w-20 glow-basil" style="top:50%; left:50%;"
+      src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Cellipse cx='80' cy='80' rx='60' ry='42' fill='%232f4d20'/%3E%3Cellipse cx='80' cy='80' rx='60' ry='42' fill='none' stroke='%236fb55a' stroke-width='6'/%3E%3Cellipse cx='80' cy='80' rx='16' ry='11' fill='%230B0B0C'/%3E%3C/svg%3E" alt="">
+
+    <img data-toss data-arc="4" class="ingredient w-28 md:w-32 glow-orange" style="top:50%; left:50%;"
+      src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cdefs%3E%3CradialGradient id='p3' cx='35%25' cy='32%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='%23ff9a70'/%3E%3Cstop offset='55%25' stop-color='%23e8452c'/%3E%3Cstop offset='100%25' stop-color='%238e1f16'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='100' cy='100' r='88' fill='url(%23p3)'/%3E%3Cg fill='%237a1810' opacity='.55'%3E%3Ccircle cx='90' cy='70' r='8'/%3E%3Ccircle cx='60' cy='110' r='9'/%3E%3Ccircle cx='130' cy='120' r='7'/%3E%3C/g%3E%3C/svg%3E" alt="">
+
+    <img data-toss data-arc="5" class="ingredient w-16 md:w-20 glow-basil" style="top:50%; left:50%;"
+      src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cdefs%3E%3ClinearGradient id='g3' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2394d67a'/%3E%3Cstop offset='100%25' stop-color='%234f8a3a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M100 10 C150 30 180 80 160 130 C140 180 90 190 60 170 C20 145 20 90 50 55 C65 38 82 20 100 10 Z' fill='url(%23g3)'/%3E%3C/svg%3E" alt="">
+
+    <!-- center plate glow -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[46vw] h-[46vw] max-w-[520px] max-h-[520px] rounded-full pointer-events-none"
+         style="background: radial-gradient(circle, rgba(255,106,61,.10), transparent 68%);"></div>
+
+    <div class="toss-text" data-toss-text="0">
+      <div>
+        <p class="eyebrow font-mono text-xs text-orange mb-3">01 &mdash; DOUGH</p>
+        <h2 class="font-display font-800 text-4xl md:text-6xl max-w-xl mx-auto leading-tight">Rested eight hours,<br>never rushed.</h2>
+      </div>
+    </div>
+    <div class="toss-text" data-toss-text="1">
+      <div>
+        <p class="eyebrow font-mono text-xs text-red mb-3">02 &mdash; FIRE</p>
+        <h2 class="font-display font-800 text-4xl md:text-6xl max-w-xl mx-auto leading-tight">Nine hundred degrees,<br>ninety seconds flat.</h2>
+      </div>
+    </div>
+    <div class="toss-text" data-toss-text="2">
+      <div>
+        <p class="eyebrow font-mono text-xs text-basil mb-3">03 &mdash; TABLE</p>
+        <h2 class="font-display font-800 text-4xl md:text-6xl max-w-xl mx-auto leading-tight">Yours, from six<br>till two in the morning.</h2>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- MENU -->
+<section id="menu" class="relative py-28 md:py-36 px-6 md:px-12 bg-bg">
+  <div class="max-w-6xl mx-auto">
+    <div class="flex items-end justify-between mb-16 flex-wrap gap-4">
+      <div>
+        <p class="eyebrow font-mono text-xs text-orange mb-3">THE MENU</p>
+        <h2 class="font-display font-800 text-4xl md:text-5xl">Three ways to<br>eat past midnight.</h2>
+      </div>
+      <p class="text-inkdim max-w-xs text-sm">Wood-fired, twelve-inch, torn by hand. Nothing frozen touches this kitchen.</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+
+      <div class="card-tilt card rounded-2xl p-8 flex flex-col justify-between h-80" data-tilt style="--accent:#FF6A3D;">
+        <div>
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-orange mb-6"></span>
+          <h3 class="font-display font-600 text-2xl mb-2">Classics</h3>
+          <p class="text-inkdim text-sm">Margherita, Marinara, Funghi. The ones that never left the menu, and never will.</p>
+        </div>
+        <span class="font-mono text-xs text-inkdim">FROM $16</span>
+      </div>
+
+      <div class="card-tilt card rounded-2xl p-8 flex flex-col justify-between h-80" data-tilt style="--accent:#E8352A;">
+        <div>
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-red mb-6"></span>
+          <h3 class="font-display font-600 text-2xl mb-2">Diavola Line</h3>
+          <p class="text-inkdim text-sm">Nduja, chili honey, Calabrian oil. For the hours when quiet food won't do.</p>
+        </div>
+        <span class="font-mono text-xs text-inkdim">FROM $19</span>
+      </div>
+
+      <div class="card-tilt card rounded-2xl p-8 flex flex-col justify-between h-80" data-tilt style="--accent:#6FB55A;">
+        <div>
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-basil mb-6"></span>
+          <h3 class="font-display font-600 text-2xl mb-2">Verde</h3>
+          <p class="text-inkdim text-sm">Basil, pistachio, courgette, ricotta. Green enough to call it balance.</p>
+        </div>
+        <span class="font-mono text-xs text-inkdim">FROM $18</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="hr-line max-w-6xl mx-auto"></div>
+
+<!-- VISIT / FOOTER -->
+<section id="visit" class="relative py-24 md:py-32 px-6 md:px-12 bg-bg">
+  <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between gap-12">
+    <div>
+      <h2 class="font-display font-800 text-3xl md:text-4xl mb-4">Open six to two.<br>Kitchen never sleeps early.</h2>
+      <a href="#" class="btn-neon inline-block mt-4 px-7 py-3 rounded-full font-mono text-xs eyebrow text-bg bg-orange hover:brightness-110 transition">RESERVE A TABLE</a>
+    </div>
+    <div class="font-mono text-xs text-inkdim space-y-2 eyebrow">
+      <p>112 VIA DELL' OMBRA</p>
+      <p>OPEN 18:00 &ndash; 02:00</p>
+      <p>LAST ORDER 02:00</p>
+      <p class="pt-4 text-ink/70">&copy; NOTTE, A PIZZERIA</p>
+    </div>
+  </div>
+</section>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ---------- Lenis smooth scroll wired into GSAP ticker ---------- */
+const lenis = new Lenis({
+  duration: 1.15,
+  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+  smoothWheel: true,
+});
+lenis.on('scroll', ScrollTrigger.update);
+gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+gsap.ticker.lagSmoothing(0);
+
+/* ---------- HERO: load-in tumble + ambient float ---------- */
+const heroIngredients = gsap.utils.toArray('#hero [data-float]');
+
+heroIngredients.forEach((el, i) => {
+  gsap.fromTo(el,
+    {
+      opacity: 0,
+      x: gsap.utils.random(-160, 160),
+      y: gsap.utils.random(-140, 140),
+      rotateX: gsap.utils.random(-120, 120),
+      rotateY: gsap.utils.random(-120, 120),
+      rotateZ: gsap.utils.random(-60, 60),
+      scale: 0.6,
+    },
+    {
+      opacity: 1,
+      x: 0,
+      y: 0,
+      rotateX: gsap.utils.random(-15, 15),
+      rotateY: gsap.utils.random(-15, 15),
+      rotateZ: gsap.utils.random(-10, 10),
+      scale: 1,
+      duration: 1.6,
+      delay: 0.15 + i * 0.12,
+      ease: 'power3.out',
+      onComplete: () => ambientFloat(el),
+    }
+  );
+});
+
+function ambientFloat(el) {
+  const depth = parseFloat(el.dataset.depth) || 1;
+  gsap.to(el, {
+    y: `+=${18 * depth}`,
+    rotateZ: `+=${10 * depth}`,
+    rotateX: `+=${8 * depth}`,
+    duration: gsap.utils.random(3.5, 5.5),
+    ease: 'sine.inOut',
+    yoyo: true,
+    repeat: -1,
+  });
+  gsap.to(el, {
+    rotateY: `+=${14 * depth}`,
+    duration: gsap.utils.random(5, 7.5),
+    ease: 'sine.inOut',
+    yoyo: true,
+    repeat: -1,
+  });
+}
+
+/* subtle parallax on mouse move for hero ingredients */
+const hero = document.getElementById('hero');
+hero.addEventListener('mousemove', (e) => {
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight / 2;
+  const dx = (e.clientX - cx) / cx;
+  const dy = (e.clientY - cy) / cy;
+  heroIngredients.forEach((el) => {
+    const depth = parseFloat(el.dataset.depth) || 1;
+    gsap.to(el, {
+      xPercent: dx * 6 * depth,
+      yPercent: dy * 6 * depth,
+      duration: 1.2,
+      ease: 'power2.out',
+      overwrite: 'auto',
+    });
+  });
+});
+
+/* ---------- THE TOSS: pinned scroll-scrubbed 3D tumble ---------- */
+const tossIngredients = gsap.utils.toArray('#toss [data-toss]');
+const tossTexts = gsap.utils.toArray('#toss [data-toss-text]');
+
+/* six arc positions arranged like toppings settling onto a pizza */
+const arcPositions = [
+  { x: -190, y: -70 },
+  { x: 170, y: -90 },
+  { x: -150, y: 110 },
+  { x: 160, y: 100 },
+  { x: 0, y: -150 },
+  { x: 0, y: 140 },
+];
+
+const tossTl = gsap.timeline({
+  scrollTrigger: {
+    trigger: '#toss',
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: 1.1,
+    pin: '.toss-pin',
+    anticipatePin: 1,
+  },
+});
+
+/* continuous idle spin, independent of scroll, so tumble never looks static */
+tossIngredients.forEach((el) => {
+  gsap.to(el, {
+    rotateZ: '+=360',
+    duration: gsap.utils.random(14, 22),
+    ease: 'none',
+    repeat: -1,
+  });
+});
+
+tossIngredients.forEach((el, i) => {
+  const pos = arcPositions[i % arcPositions.length];
+  tossTl.fromTo(el,
+    {
+      xPercent: -50, yPercent: -50,
+      x: gsap.utils.random(-560, 560),
+      y: gsap.utils.random(-420, 420),
+      rotateX: gsap.utils.random(-200, 200),
+      rotateY: gsap.utils.random(-200, 200),
+      scale: 0.7,
+      opacity: 0.4,
+    },
+    {
+      x: pos.x, y: pos.y,
+      rotateX: gsap.utils.random(-25, 25),
+      rotateY: gsap.utils.random(-25, 25),
+      scale: 1,
+      opacity: 1,
+      duration: 1,
+      ease: 'none',
+    },
+    0
+  ).to(el, {
+    x: gsap.utils.random(-620, 620),
+    y: gsap.utils.random(-460, 460),
+    rotateX: gsap.utils.random(-200, 200),
+    rotateY: gsap.utils.random(-200, 200),
+    scale: 0.7,
+    opacity: 0.3,
+    duration: 1,
+    ease: 'none',
+  }, 2);
+});
+
+/* text checkpoints fade in/out across the three scroll phases */
+tossTexts.forEach((el, i) => {
+  const start = i;
+  tossTl.to(el, { opacity: 1, duration: 0.35, ease: 'none' }, start + 0.15)
+        .to(el, { opacity: 0, duration: 0.35, ease: 'none' }, start + 0.75);
+});
+
+/* ---------- MENU: 3D tilt cards ---------- */
+gsap.utils.toArray('[data-tilt]').forEach((card) => {
+  const rotateX = gsap.quickTo(card, 'rotateX', { duration: 0.5, ease: 'power3.out' });
+  const rotateY = gsap.quickTo(card, 'rotateY', { duration: 0.5, ease: 'power3.out' });
+  const lift = gsap.quickTo(card, 'y', { duration: 0.5, ease: 'power3.out' });
+
+  card.style.perspective = '800px';
+
+  card.addEventListener('mousemove', (e) => {
+    const r = card.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
+    rotateY(px * 14);
+    rotateX(-py * 14);
+    lift(-6);
+    card.style.borderColor = card.style.getPropertyValue('--accent');
+  });
+
+  card.addEventListener('mouseleave', () => {
+    rotateY(0);
+    rotateX(0);
+    lift(0);
+    card.style.borderColor = 'rgba(255,255,255,0.08)';
+  });
+});
+
+/* ---------- fade-up reveal for menu + footer copy ---------- */
+gsap.utils.toArray('#menu, #visit').forEach((section) => {
+  gsap.from(section.querySelectorAll('h2, h3, p, a'), {
+    opacity: 0,
+    y: 24,
+    duration: 0.8,
+    stagger: 0.05,
+    ease: 'power2.out',
+    scrollTrigger: {
+      trigger: section,
+      start: 'top 75%',
+    },
+  });
+});
+
+ScrollTrigger.refresh();
+</script>
+</body>
+</html>
