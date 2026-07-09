@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurora Media — Design, Digital &amp; Motion</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          obsidian: '#050505',
+          panel: '#0b0b0e',
+          cyan: '#4CFBEA',
+          violet: '#9D4EDD',
+          cosmic: '#6C2BD9',
+          bone: '#F3F1EC',
+          dim: '#8A8A93',
+        },
+        fontFamily: {
+          display: ['"Bricolage Grotesque"', 'sans-serif'],
+          body: ['Inter', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'monospace'],
+        }
+      }
+    }
+  }
+</script>
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<!-- Lenis -->
+<script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+
+<style>
+  :root{
+    --cyan:#4CFBEA;
+    --violet:#9D4EDD;
+    --cosmic:#6C2BD9;
+  }
+  html,body{ background:#050505; overscroll-behavior:none; }
+  body{ font-family:'Inter', sans-serif; color:#F3F1EC; }
+  ::selection{ background:#9D4EDD; color:#050505; }
+
+  ::-webkit-scrollbar{ width:9px; }
+  ::-webkit-scrollbar-track{ background:#050505; }
+  ::-webkit-scrollbar-thumb{ background:linear-gradient(#4CFBEA,#9D4EDD); border-radius:8px; }
+
+  .text-aurora{
+    background:linear-gradient(100deg,#4CFBEA 0%, #9D4EDD 55%, #6C2BD9 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .stroke-text{
+    -webkit-text-stroke:1px rgba(243,241,236,0.35);
+    color:transparent;
+  }
+
+  .grain::before{
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:60; opacity:.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .orb{ position:absolute; border-radius:9999px; filter:blur(90px); pointer-events:none; }
+
+  .floater{ position:absolute; will-change:transform; transform-style:preserve-3d; filter:drop-shadow(0 0 18px rgba(76,251,234,0.15)); }
+
+  .glass{
+    background:rgba(243,241,236,0.03);
+    border:1px solid rgba(243,241,236,0.08);
+    backdrop-filter:blur(6px);
+  }
+
+  .row-line{ border-top:1px solid rgba(243,241,236,0.10); }
+
+  .perspective{ perspective:1400px; }
+
+  @media (prefers-reduced-motion: reduce){
+    .floater{ animation:none !important; }
+  }
+
+  .nav-link{ position:relative; }
+  .nav-link::after{
+    content:''; position:absolute; left:0; bottom:-3px; width:0%; height:1px;
+    background:linear-gradient(90deg,#4CFBEA,#9D4EDD); transition:width .35s ease;
+  }
+  .nav-link:hover::after{ width:100%; }
+
+  .service-row{ cursor:default; }
+  .service-row .rev-num{ font-variant-numeric:tabular-nums; }
+
+  .cta-btn{
+    background:linear-gradient(100deg,#4CFBEA,#9D4EDD 60%,#6C2BD9);
+    color:#050505;
+  }
+
+  .keyframe-track{ background:linear-gradient(90deg, rgba(243,241,236,0.15), rgba(243,241,236,0.15)); height:1px; }
+
+  .reveal-on-scroll{
+    opacity:0;
+    transform:translateY(36px) scale(0.98);
+    transition:opacity .8s cubic-bezier(.2,.8,.2,1), transform .8s cubic-bezier(.2,.8,.2,1);
+    will-change:opacity, transform;
+  }
+  .reveal-on-scroll.is-visible{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+  .reveal-on-scroll[data-delay="200"]{ transition-delay:.2s; }
+  .reveal-on-scroll[data-delay="400"]{ transition-delay:.4s; }
+  .reveal-on-scroll[data-delay="600"]{ transition-delay:.6s; }
+
+  @media (prefers-reduced-motion: reduce){
+    .reveal-on-scroll{ transition:none !important; transform:none !important; opacity:1 !important; }
+  }
+</style>
+</head>
+
+<body class="bg-obsidian grain overflow-x-hidden">
+
+<!-- ============ NAV ============ -->
+<header class="fixed top-0 left-0 w-full z-50 px-6 md:px-10 py-5 flex items-center justify-between">
+  <div class="font-display font-semibold tracking-tight text-lg">
+    AURORA <span class="text-dim font-normal text-sm align-top">MEDIA</span>
+  </div>
+  <nav class="hidden md:flex items-center gap-8 font-mono text-xs uppercase tracking-widest text-bone/80">
+    <a href="#services" class="nav-link">Services</a>
+    <a href="#video" class="nav-link">Motion</a>
+    <a href="#contact" class="nav-link">Contact</a>
+  </nav>
+  <a href="#contact" class="hidden md:inline-block font-mono text-xs uppercase tracking-widest border border-bone/25 px-4 py-2 rounded-full hover:border-cyan/60 hover:text-cyan transition-colors">
+    Start a project
+  </a>
+</header>
+
+<!-- ============ HERO ============ -->
+<section id="hero" class="relative min-h-[100svh] flex flex-col justify-center perspective overflow-hidden">
+
+  <div class="orb w-[38rem] h-[38rem] bg-cosmic/40 -top-40 -left-40"></div>
+  <div class="orb w-[30rem] h-[30rem] bg-violet/30 top-1/3 right-0"></div>
+  <div class="orb w-[24rem] h-[24rem] bg-cyan/20 bottom-0 left-1/4"></div>
+
+  <!-- Floating creative assets -->
+  <div id="hero-floaters" class="absolute inset-0 pointer-events-none">
+
+    <!-- Camera lens -->
+    <div class="floater" data-depth="0.6" style="top:14%; left:8%; width:110px;">
+      <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="lensG" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#4CFBEA"/><stop offset="100%" stop-color="#9D4EDD"/>
+        </linearGradient></defs>
+        <circle cx="60" cy="60" r="52" stroke="url(#lensG)" stroke-width="1.4" opacity="0.85"/>
+        <circle cx="60" cy="60" r="38" stroke="url(#lensG)" stroke-width="1" opacity="0.6"/>
+        <circle cx="60" cy="60" r="22" stroke="url(#lensG)" stroke-width="1.2" opacity="0.9"/>
+        <circle cx="60" cy="60" r="6" fill="url(#lensG)" opacity="0.7"/>
+        <path d="M60 8 L60 22 M60 98 L60 112 M8 60 L22 60 M98 60 L112 60" stroke="#4CFBEA" stroke-width="0.8" opacity="0.4"/>
+      </svg>
+    </div>
+
+    <!-- Color palette -->
+    <div class="floater" data-depth="0.35" style="top:58%; left:14%; width:120px;">
+      <svg viewBox="0 0 140 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M70 4C33 4 4 30 4 60c0 18 14 26 28 26 6 0 9-4 9-9 0-4-3-6-3-11 0-8 7-13 16-13h20c17 0 30-12 30-27C104 15 90 4 70 4z" stroke="#9D4EDD" stroke-width="1.3" opacity="0.85"/>
+        <circle cx="34" cy="34" r="8" fill="#4CFBEA" opacity="0.85"/>
+        <circle cx="66" cy="20" r="8" fill="#9D4EDD" opacity="0.85"/>
+        <circle cx="96" cy="34" r="8" fill="#6C2BD9" opacity="0.85"/>
+        <circle cx="24" cy="62" r="8" fill="#F3F1EC" opacity="0.5"/>
+      </svg>
+    </div>
+
+    <!-- Typography glyph -->
+    <div class="floater" data-depth="0.5" style="top:10%; right:10%; width:150px;">
+      <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
+        <text x="0" y="110" font-family="'Bricolage Grotesque', sans-serif" font-size="130" font-weight="700" fill="none" stroke="#4CFBEA" stroke-width="1" opacity="0.7">Aa</text>
+      </svg>
+    </div>
+
+    <!-- UI wireframe block -->
+    <div class="floater" data-depth="0.45" style="top:66%; right:16%; width:150px;">
+      <svg viewBox="0 0 160 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="156" height="106" rx="8" stroke="#9D4EDD" stroke-width="1" opacity="0.7"/>
+        <rect x="14" y="16" width="40" height="8" rx="2" fill="#4CFBEA" opacity="0.6"/>
+        <rect x="14" y="34" width="132" height="1" fill="#F3F1EC" opacity="0.25"/>
+        <rect x="14" y="48" width="60" height="46" rx="4" stroke="#4CFBEA" stroke-width="0.8" opacity="0.5"/>
+        <rect x="84" y="48" width="62" height="20" rx="4" stroke="#6C2BD9" stroke-width="0.8" opacity="0.6"/>
+        <rect x="84" y="74" width="62" height="20" rx="4" stroke="#6C2BD9" stroke-width="0.8" opacity="0.6"/>
+      </svg>
+    </div>
+
+    <!-- Cursor arrow -->
+    <div class="floater" data-depth="0.7" style="top:36%; right:34%; width:46px;">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 4 L34 20 L20 22 L26 34 L20 36 L14 24 L6 30 Z" fill="#4CFBEA" opacity="0.9"/>
+      </svg>
+    </div>
+
+    <!-- Glow chart -->
+    <div class="floater" data-depth="0.3" style="bottom:8%; right:8%; width:170px;">
+      <svg viewBox="0 0 180 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#9D4EDD" stop-opacity="0.5"/><stop offset="100%" stop-color="#9D4EDD" stop-opacity="0"/>
+        </linearGradient></defs>
+        <polyline points="4,80 34,64 60,70 90,40 120,48 150,14 176,20" fill="none" stroke="#9D4EDD" stroke-width="2"/>
+        <polygon points="4,80 34,64 60,70 90,40 120,48 150,14 176,20 176,96 4,96" fill="url(#chartFill)"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="relative z-10 px-6 md:px-10">
+    <p class="font-mono text-xs md:text-sm tracking-[0.3em] text-cyan/80 uppercase mb-6">
+      Creative Studio — Est. Signals of Motion
+    </p>
+    <h1 class="font-display font-semibold leading-[0.92] text-[13vw] md:text-[7.2vw] tracking-tight">
+      <span class="block text-bone">Ideas that</span>
+      <span class="block text-aurora">tumble into</span>
+      <span class="block stroke-text">motion.</span>
+    </h1>
+    <p class="max-w-md mt-8 text-dim text-base md:text-lg font-body">
+      Aurora Media builds brand systems, digital campaigns and video that move —
+      eleven disciplines, one studio, gliding across your scroll.
+    </p>
+    <div class="mt-10 flex items-center gap-5">
+      <a href="#services" class="cta-btn font-mono text-xs uppercase tracking-widest px-6 py-3.5 rounded-full font-medium">
+        View the work
+      </a>
+      <a href="#contact" class="font-mono text-xs uppercase tracking-widest text-bone/70 hover:text-cyan transition-colors">
+        Book a call →
+      </a>
+    </div>
+  </div>
+
+  <div class="absolute bottom-8 left-6 md:left-10 font-mono text-[10px] tracking-widest text-dim uppercase flex items-center gap-2">
+    <span class="w-1.5 h-1.5 rounded-full bg-cyan animate-pulse"></span> Scroll to unfold
+  </div>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<section class="relative border-y border-bone/10 py-5 overflow-hidden">
+  <div id="marquee" class="flex whitespace-nowrap font-display text-3xl md:text-5xl gap-10 text-bone/15">
+    <span>Branding — Digital Design — Paid Ads — Packaging — Strategy — Video Editing — </span>
+    <span>Branding — Digital Design — Paid Ads — Packaging — Strategy — Video Editing — </span>
+  </div>
+</section>
+
+<!-- ============ SERVICES ============ -->
+<section id="services" class="relative py-28 md:py-36 px-6 md:px-10 perspective overflow-hidden">
+
+  <div class="orb w-[26rem] h-[26rem] bg-violet/20 top-0 right-0"></div>
+
+  <div class="relative z-10 mb-16 md:mb-24 max-w-2xl reveal-on-scroll">
+    <p class="font-mono text-xs tracking-[0.3em] text-cyan/80 uppercase mb-4">The Index</p>
+    <h2 class="font-display font-semibold text-4xl md:text-6xl leading-[1.02] tracking-tight">
+      Eleven disciplines, <span class="text-aurora">read in order.</span>
+    </h2>
+    <p class="mt-5 text-dim">From first mark to final cut — the sequence we take every brand through.</p>
+  </div>
+
+  <div id="service-list" class="relative z-10 border-t border-bone/10">
+    <!-- rows injected structure below -->
+  </div>
+</section>
+
+<!-- ============ VIDEO EDITING SHOWCASE ============ -->
+<section id="video" class="relative py-32 md:py-44 px-6 md:px-10 overflow-hidden border-t border-bone/10">
+
+  <div class="orb w-[30rem] h-[30rem] bg-cosmic/30 bottom-0 left-0"></div>
+
+  <div id="video-floaters" class="absolute inset-0 pointer-events-none">
+    <!-- Film strip -->
+    <div class="floater" data-depth="0.4" style="top:12%; left:6%; width:220px;">
+      <svg viewBox="0 0 260 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="256" height="86" rx="6" stroke="#4CFBEA" stroke-width="1" opacity="0.7"/>
+        <g fill="#050505" stroke="#4CFBEA" stroke-width="0.7" opacity="0.7">
+          <rect x="12" y="10" width="10" height="10" rx="2"/><rect x="12" y="70" width="10" height="10" rx="2"/>
+          <rect x="12" y="40" width="10" height="10" rx="2"/>
+          <rect x="238" y="10" width="10" height="10" rx="2"/><rect x="238" y="70" width="10" height="10" rx="2"/>
+          <rect x="238" y="40" width="10" height="10" rx="2"/>
+        </g>
+        <rect x="34" y="14" width="60" height="62" rx="3" stroke="#9D4EDD" stroke-width="0.8" opacity="0.7"/>
+        <rect x="100" y="14" width="60" height="62" rx="3" stroke="#9D4EDD" stroke-width="0.8" opacity="0.5"/>
+        <rect x="166" y="14" width="60" height="62" rx="3" stroke="#9D4EDD" stroke-width="0.8" opacity="0.7"/>
+      </svg>
+    </div>
+
+    <!-- Play button -->
+    <div class="floater" data-depth="0.65" style="top:52%; right:12%; width:110px;">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="46" stroke="#9D4EDD" stroke-width="1.3" opacity="0.85"/>
+        <path d="M42 34 L70 50 L42 66 Z" fill="#4CFBEA" opacity="0.9"/>
+      </svg>
+    </div>
+
+    <!-- Keyframe timeline -->
+    <div class="floater" data-depth="0.3" style="bottom:10%; left:16%; width:220px;">
+      <svg viewBox="0 0 240 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="20" x2="240" y2="20" stroke="#F3F1EC" stroke-opacity="0.2"/>
+        <g fill="#6C2BD9" opacity="0.85">
+          <rect x="14" y="14" width="12" height="12" transform="rotate(45 20 20)"/>
+          <rect x="74" y="14" width="12" height="12" transform="rotate(45 80 20)"/>
+          <rect x="134" y="14" width="12" height="12" transform="rotate(45 140 20)"/>
+          <rect x="200" y="14" width="12" height="12" transform="rotate(45 206 20)"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="relative z-10 max-w-3xl reveal-on-scroll">
+    <p class="font-mono text-xs tracking-[0.3em] text-cyan/80 uppercase mb-4">Motion &amp; Video</p>
+    <h2 class="font-display font-semibold text-4xl md:text-6xl leading-[1.05] tracking-tight mb-6">
+      Every frame, <span class="text-aurora">cut on rhythm.</span>
+    </h2>
+    <p class="text-dim text-lg max-w-xl mb-10">
+      Our edit bay turns raw footage into paced, sound-designed stories —
+      social cuts, brand films and campaign trailers built frame by frame.
+    </p>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-xl font-mono text-xs uppercase tracking-widest text-dim">
+      <div class="reveal-on-scroll" data-delay="200"><span class="block text-2xl font-display text-bone mb-1">4K/8K</span>Native delivery</div>
+      <div class="reveal-on-scroll" data-delay="300"><span class="block text-2xl font-display text-bone mb-1">120+</span>Cuts / year</div>
+      <div class="reveal-on-scroll" data-delay="400"><span class="block text-2xl font-display text-bone mb-1">24fps–60fps</span>Frame rates</div>
+      <div class="reveal-on-scroll" data-delay="500"><span class="block text-2xl font-display text-bone mb-1">A–Z</span>Story to sound</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT / CTA ============ -->
+<section id="contact" class="relative py-32 md:py-48 px-6 md:px-10 text-center overflow-hidden border-t border-bone/10">
+  <div class="orb w-[34rem] h-[34rem] bg-violet/25 top-0 left-1/2 -translate-x-1/2"></div>
+  <div class="relative z-10 reveal-on-scroll">
+    <p class="font-mono text-xs tracking-[0.3em] text-cyan/80 uppercase mb-6">Let's build</p>
+    <h2 class="font-display font-semibold text-[12vw] md:text-[6.5vw] leading-[0.95] tracking-tight">
+      <span class="text-aurora">Start the</span><br class="md:hidden"> <span class="stroke-text">next chapter.</span>
+    </h2>
+    <a href="mailto:hello@auroramedia.studio" class="cta-btn inline-block mt-10 font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-full font-medium">
+      hello@auroramedia.studio
+    </a>
+  </div>
+</section>
+
+<footer class="px-6 md:px-10 py-10 border-t border-bone/10 flex flex-col md:flex-row items-center justify-between gap-4 text-dim font-mono text-[11px] uppercase tracking-widest">
+  <span>© 2026 Aurora Media Studio</span>
+  <span>Design · Digital · Motion</span>
+</footer>
+
+<script>
+/* ===================== SERVICE DATA ===================== */
+const services = [
+  { n:'01', name:'Brand Identity', tag:'Branding', desc:'Naming, logo systems and visual language built to last.' },
+  { n:'02', name:'Visual Systems', tag:'Branding', desc:'Scalable design tokens, grids and component libraries.' },
+  { n:'03', name:'Packaging Design', tag:'Branding', desc:'Shelf-ready structural and print design.' },
+  { n:'04', name:'Digital Design (UI/UX)', tag:'Digital', desc:'Interfaces engineered for clarity and conversion.' },
+  { n:'05', name:'Web Development', tag:'Digital', desc:'Fast, animated builds shipped on modern stacks.' },
+  { n:'06', name:'Paid Social &amp; Ads', tag:'Digital', desc:'Performance creative across Meta, TikTok and search.' },
+  { n:'07', name:'Performance Marketing', tag:'Digital', desc:'Full-funnel media planning and optimisation.' },
+  { n:'08', name:'Brand Strategy', tag:'Strategy', desc:'Positioning, architecture and go-to-market frameworks.' },
+  { n:'09', name:'Content Strategy', tag:'Strategy', desc:'Editorial systems that keep channels in rhythm.' },
+  { n:'10', name:'Video Editing', tag:'Motion', desc:'Story-led cuts for campaigns, social and film.' },
+  { n:'11', name:'Motion Graphics', tag:'Motion', desc:'Kinetic type, 2D/3D-simulated animation and VFX polish.' },
+];
+
+const listEl = document.getElementById('service-list');
+listEl.innerHTML = services.map(s => `
+  <div class="service-row row-line group relative flex items-center gap-6 md:gap-10 py-7 md:py-9 opacity-0 translate-y-10">
+    <span class="rev-num font-mono text-sm md:text-base text-dim w-10 shrink-0">${s.n}</span>
+    <div class="flex-1">
+      <div class="flex flex-col md:flex-row md:items-baseline md:gap-4">
+        <h3 class="font-display text-2xl md:text-4xl tracking-tight text-bone group-hover:text-aurora transition-colors duration-300">${s.name}</h3>
+        <span class="font-mono text-[10px] uppercase tracking-widest text-cyan/70">${s.tag}</span>
+      </div>
+      <p class="text-dim text-sm md:text-base mt-1 max-w-md">${s.desc}</p>
+    </div>
+    <span class="hidden md:block font-mono text-xs text-dim opacity-0 group-hover:opacity-100 transition-opacity duration-300">→</span>
+  </div>
+`).join('') + '<div class="row-line"></div>';
+
+/* ===================== LENIS SMOOTH SCROLL ===================== */
+const lenis = new Lenis({
+  duration: 1.15,
+  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+  smoothWheel: true,
+});
+function raf(time){ lenis.raf(time); requestAnimationFrame(raf); }
+requestAnimationFrame(raf);
+
+gsap.registerPlugin(ScrollTrigger);
+lenis.on('scroll', ScrollTrigger.update);
+gsap.ticker.add((time)=>{ lenis.raf(time * 1000); });
+gsap.ticker.lagSmoothing(0);
+
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ===================== FLOATING TUMBLE ASSETS ===================== */
+function initFloaters(container){
+  const floaters = container.querySelectorAll('.floater');
+  floaters.forEach((el, i) => {
+    const depth = parseFloat(el.dataset.depth || 0.4);
+    gsap.set(el, {
+      rotateX: gsap.utils.random(-20, 20),
+      rotateY: gsap.utils.random(-20, 20),
+      rotateZ: gsap.utils.random(-8, 8),
+      transformPerspective: 900,
+    });
+
+    if(!reduceMotion){
+      // continuous ambient tumble
+      gsap.to(el, {
+        y: '+=' + gsap.utils.random(18, 34),
+        x: '+=' + gsap.utils.random(-16, 16),
+        rotateX: '+=' + gsap.utils.random(30, 70) * (Math.random() > 0.5 ? 1 : -1),
+        rotateY: '+=' + gsap.utils.random(30, 90) * (Math.random() > 0.5 ? 1 : -1),
+        rotateZ: '+=' + gsap.utils.random(-25, 25),
+        duration: gsap.utils.random(6, 11),
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1,
+        delay: i * 0.3,
+      });
+    }
+
+    // scroll-linked parallax drift + extra spin, scoped to this section
+    gsap.to(el, {
+      y: (i % 2 === 0 ? '-=' : '+=') + (120 * depth),
+      rotateZ: '+=' + (60 * depth) * (i % 2 === 0 ? 1 : -1),
+      ease: 'none',
+      scrollTrigger: {
+        trigger: container,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: 1.2,
+      }
+    });
+  });
+}
+initFloaters(document.getElementById('hero-floaters'));
+initFloaters(document.getElementById('video-floaters'));
+
+/* Hero entrance */
+gsap.from('#hero h1 span', {
+  y: 60, opacity: 0, rotateX: 40, duration: 1.1, stagger: 0.12, ease: 'power4.out', delay: 0.2
+});
+gsap.from('#hero p, #hero .cta-btn, #hero a[href="#contact"]', {
+  y: 20, opacity: 0, duration: 0.9, stagger: 0.08, ease: 'power3.out', delay: 0.7
+});
+
+/* Marquee */
+gsap.to('#marquee', {
+  xPercent: -50,
+  ease: 'none',
+  duration: 22,
+  repeat: -1,
+});
+/* ===================== SERVICES PINNED SCROLL TIMELINE ===================== */
+const servicesSection = document.getElementById('services');
+const serviceRows = gsap.utils.toArray('.service-row');
+
+if (servicesSection && serviceRows.length) {
+  // 1. تصفير الحالة الابتدائية لجميع الصفوف (إخفاؤها تماماً وإزاحتها للأسفل)
+  gsap.set(serviceRows, { opacity: 0, y: 50, rotateX: 15 });
+
+  if (!reduceMotion) {
+    // 2. جعل الصفوف تتموضع فوق بعضها بشكل مطلق ليتم إظهارها واحدة تلو الأخرى في نفس المكان
+    // نترك الصف الأول يظهر بشكل طبيعي، والبقية يتم التحكم بهم
+    serviceRows.forEach((row, index) => {
+      if (index > 0) {
+        row.style.position = 'absolute';
+        row.style.top = '0';
+        row.style.left = '0';
+        row.style.width = '100%';
+      }
+    });
+
+    // تحويل الحاوية الأساسية إلى وضع نسبي لضبط الـ absolute المضاف حديثاً
+    listEl.classList.add('relative', 'min-h-[450px]', 'md:min-h-[500px]');
+
+    // 3. إنشاء التايم لاين وتثبيت السكشن بالكامل (Pin) أثناء التمرير
+    const pinTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: servicesSection,
+        start: 'top top',       // يبدأ التثبيت بمجرد وصول السكشن لأعلى الشاشة
+        end: `+=${serviceRows.length * 100}%`, // مدة التثبيت تعتمد على عدد الخدمات ليعطي عمق للسكرول
+        scrub: 1,               // ربط الحركة بالكامل وبشكل ناعم بـ "عجلة" السكرول
+        pin: true,              // تثبيت السكشن في الشاشة
+        anticipatePin: 1,
+      }
+    });
+
+    // 4. بناء تتابع حركات الـ Show/Hide لكل خدمة
+    serviceRows.forEach((row, index) => {
+      // أنيميشن ظهور الخدمة الحالية
+      pinTl.to(row, {
+        opacity: 1,
+        y: 0,
+        rotateX: 0,
+        duration: 1,
+        ease: 'power2.out',
+      });
+
+      // إذا لم تكن هذه هي الخدمة الأخيرة، قم بإخفائها وتصعيدها للأعلى لإفساح المجال للخدمة التالية
+      if (index < serviceRows.length - 1) {
+        pinTl.to(row, {
+          opacity: 0,
+          y: -50,
+          rotateX: -15,
+          duration: 0.8,
+          ease: 'power2.in',
+        }, '+=0.5'); // يترك مسافة زمنية صغيرة تظل فيها الخدمة مقروءة قبل الانتقال للتالية
+      }
+    });
+  } else {
+    // في حال تفعيل وضع تقليل الحركة (Reduced Motion) تظهر بشكل طبيعي متتابع بلا تعقيد
+    const serviceTimeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: servicesSection,
+        start: 'top 75%',
+        toggleActions: 'play none none reverse',
+      }
+    });
+    serviceTimeline.to(serviceRows, { opacity: 1, y: 0, rotateX: 0, duration: 0.6, stagger: 0.15 });
+  }
+}
+
+/* Services section intro scroll animation + orb parallax */
+if (!reduceMotion && servicesSection) {
+  const servicesOrb = servicesSection.querySelector('.orb');
+  const servicesIntro = servicesSection.querySelector('.relative.z-10.mb-16.max-w-2xl.reveal-on-scroll');
+
+  if (servicesIntro) {
+    gsap.fromTo(servicesIntro,
+      { opacity: 0, y: 30, rotateX: 18 },
+      {
+        opacity: 1,
+        y: 0,
+        rotateX: 0,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: servicesSection,
+          start: 'top 85%',
+          end: 'top 30%',
+          scrub: 1,
+        }
+      }
+    );
+  }
+
+  if (servicesOrb) {
+    gsap.fromTo(servicesOrb,
+      { y: 20, x: 0, scale: 0.98, rotateZ: -6 },
+      {
+        y: -120,
+        x: 60,
+        scale: 1.12,
+        rotateZ: 12,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: servicesSection,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1.2,
+        }
+      }
+    );
+  }
+}
+
+/* Video section stat counters + heading reveal */
+gsap.from('#video h2, #video p, #video .grid > div', {
+  y: 30, opacity: 0, duration: 0.9, stagger: 0.08, ease: 'power3.out',
+  scrollTrigger: { trigger: '#video', start: 'top 70%' }
+});
+
+/* CTA reveal */
+gsap.from('#contact h2, #contact p, #contact a', {
+  y: 30, opacity: 0, duration: 1, stagger: 0.1, ease: 'power3.out',
+  scrollTrigger: { trigger: '#contact', start: 'top 75%' }
+});
+
+/* Scroll reveal observer for additional elements */
+const revealElements = document.querySelectorAll('.reveal-on-scroll');
+const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+if(reduceMotionQuery.matches){
+  revealElements.forEach((el) => el.classList.add('is-visible'));
+} else {
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2, rootMargin: '0px 0px -10% 0px' });
+
+  revealElements.forEach((el) => revealObserver.observe(el));
+}
+</script>
+</body>
+</html
