@@ -41,91 +41,35 @@
 <!-- Lenis -->
 <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
 
-<style>
-  :root{
-    --cyan:#4CFBEA;
-    --violet:#9D4EDD;
-    --cosmic:#6C2BD9;
-  }
-  html,body{ background:#050505; overscroll-behavior:none; }
-  body{ font-family:'Inter', sans-serif; color:#F3F1EC; }
-  ::selection{ background:#9D4EDD; color:#050505; }
+<link rel="stylesheet" href="style.css">
 
-  ::-webkit-scrollbar{ width:9px; }
-  ::-webkit-scrollbar-track{ background:#050505; }
-  ::-webkit-scrollbar-thumb{ background:linear-gradient(#4CFBEA,#9D4EDD); border-radius:8px; }
-
-  .text-aurora{
-    background:linear-gradient(100deg,#4CFBEA 0%, #9D4EDD 55%, #6C2BD9 100%);
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-  }
-  .stroke-text{
-    -webkit-text-stroke:1px rgba(243,241,236,0.35);
-    color:transparent;
-  }
-
-  .grain::before{
-    content:''; position:fixed; inset:0; pointer-events:none; z-index:60; opacity:.05; mix-blend-mode:overlay;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
-
-  .orb{ position:absolute; border-radius:9999px; filter:blur(90px); pointer-events:none; }
-
-  .floater{ position:absolute; will-change:transform; transform-style:preserve-3d; filter:drop-shadow(0 0 18px rgba(76,251,234,0.15)); }
-
-  .glass{
-    background:rgba(243,241,236,0.03);
-    border:1px solid rgba(243,241,236,0.08);
-    backdrop-filter:blur(6px);
-  }
-
-  .row-line{ border-top:1px solid rgba(243,241,236,0.10); }
-
-  .perspective{ perspective:1400px; }
-
-  @media (prefers-reduced-motion: reduce){
-    .floater{ animation:none !important; }
-  }
-
-  .nav-link{ position:relative; }
-  .nav-link::after{
-    content:''; position:absolute; left:0; bottom:-3px; width:0%; height:1px;
-    background:linear-gradient(90deg,#4CFBEA,#9D4EDD); transition:width .35s ease;
-  }
-  .nav-link:hover::after{ width:100%; }
-
-  .service-row{ cursor:default; }
-  .service-row .rev-num{ font-variant-numeric:tabular-nums; }
-
-  .cta-btn{
-    background:linear-gradient(100deg,#4CFBEA,#9D4EDD 60%,#6C2BD9);
-    color:#050505;
-  }
-
-  .keyframe-track{ background:linear-gradient(90deg, rgba(243,241,236,0.15), rgba(243,241,236,0.15)); height:1px; }
-
-  .reveal-on-scroll{
-    opacity:0;
-    transform:translateY(36px) scale(0.98);
-    transition:opacity .8s cubic-bezier(.2,.8,.2,1), transform .8s cubic-bezier(.2,.8,.2,1);
-    will-change:opacity, transform;
-  }
-  .reveal-on-scroll.is-visible{
-    opacity:1;
-    transform:translateY(0) scale(1);
-  }
-  .reveal-on-scroll[data-delay="200"]{ transition-delay:.2s; }
-  .reveal-on-scroll[data-delay="400"]{ transition-delay:.4s; }
-  .reveal-on-scroll[data-delay="600"]{ transition-delay:.6s; }
-
-  @media (prefers-reduced-motion: reduce){
-    .reveal-on-scroll{ transition:none !important; transform:none !important; opacity:1 !important; }
-  }
-</style>
 </head>
 
 <body class="bg-obsidian grain overflow-x-hidden">
-
+<!-- ============ PAPER RIP OVERLAY ============ -->
+<div id="paper-overlay" class="fixed inset-0 z-[100] overflow-hidden pointer-events-none" aria-hidden="true">
+  <svg id="paper-svg" class="block w-full h-full" width="100%" height="100%">
+    <defs>
+      <radialGradient id="paperLight" cx="50%" cy="50%" r="80%">
+        <stop offset="0%" stop-color="#212123"/>
+        <stop offset="55%" stop-color="#1c1c1f"/>
+        <stop offset="100%" stop-color="#1a1a1a"/>
+      </radialGradient>
+      <mask id="ripMask" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%" mask-type="luminance">
+        <rect width="100%" height="100%" fill="#ffffff"/>
+        <g id="ripWrap">
+          <g id="ripScale">
+            <path id="ripHalo" fill="#4d4d4d"/>
+            <path id="ripPath" fill="#000000"/>
+          </g>
+        </g>
+      </mask>
+    </defs>
+    <g mask="url(#ripMask)">
+      <rect width="100%" height="100%" fill="url(#paperLight)"/>
+    </g>
+  </svg>
+</div>
 <!-- ============ NAV ============ -->
 <header class="fixed top-0 left-0 w-full z-50 px-6 md:px-10 py-5 flex items-center justify-between">
   <div class="font-display font-semibold tracking-tight text-lg">
@@ -147,6 +91,13 @@
   <div class="orb w-[38rem] h-[38rem] bg-cosmic/40 -top-40 -left-40"></div>
   <div class="orb w-[30rem] h-[30rem] bg-violet/30 top-1/3 right-0"></div>
   <div class="orb w-[24rem] h-[24rem] bg-cyan/20 bottom-0 left-1/4"></div>
+
+  <!-- AURORA particle logo stage (يظهر بعد كشف الورق) -->
+  <div id="logo-stage" class="absolute inset-0 z-[5] flex items-center justify-center pointer-events-none" aria-hidden="true">
+    <svg id="logo-svg" class="w-full h-full opacity-0" viewBox="0 0 1000 200" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 26px rgba(76,251,234,0.14))">
+      <g id="logo3d"></g>
+    </svg>
+  </div>
 
   <!-- Floating creative assets -->
   <div id="hero-floaters" class="absolute inset-0 pointer-events-none">
@@ -349,257 +300,6 @@
   <span>Design · Digital · Motion</span>
 </footer>
 
-<script>
-/* ===================== SERVICE DATA ===================== */
-const services = [
-  { n:'01', name:'Brand Identity', tag:'Branding', desc:'Naming, logo systems and visual language built to last.' },
-  { n:'02', name:'Visual Systems', tag:'Branding', desc:'Scalable design tokens, grids and component libraries.' },
-  { n:'03', name:'Packaging Design', tag:'Branding', desc:'Shelf-ready structural and print design.' },
-  { n:'04', name:'Digital Design (UI/UX)', tag:'Digital', desc:'Interfaces engineered for clarity and conversion.' },
-  { n:'05', name:'Web Development', tag:'Digital', desc:'Fast, animated builds shipped on modern stacks.' },
-  { n:'06', name:'Paid Social &amp; Ads', tag:'Digital', desc:'Performance creative across Meta, TikTok and search.' },
-  { n:'07', name:'Performance Marketing', tag:'Digital', desc:'Full-funnel media planning and optimisation.' },
-  { n:'08', name:'Brand Strategy', tag:'Strategy', desc:'Positioning, architecture and go-to-market frameworks.' },
-  { n:'09', name:'Content Strategy', tag:'Strategy', desc:'Editorial systems that keep channels in rhythm.' },
-  { n:'10', name:'Video Editing', tag:'Motion', desc:'Story-led cuts for campaigns, social and film.' },
-  { n:'11', name:'Motion Graphics', tag:'Motion', desc:'Kinetic type, 2D/3D-simulated animation and VFX polish.' },
-];
-
-const listEl = document.getElementById('service-list');
-listEl.innerHTML = services.map(s => `
-  <div class="service-row row-line group relative flex items-center gap-6 md:gap-10 py-7 md:py-9 opacity-0 translate-y-10">
-    <span class="rev-num font-mono text-sm md:text-base text-dim w-10 shrink-0">${s.n}</span>
-    <div class="flex-1">
-      <div class="flex flex-col md:flex-row md:items-baseline md:gap-4">
-        <h3 class="font-display text-2xl md:text-4xl tracking-tight text-bone group-hover:text-aurora transition-colors duration-300">${s.name}</h3>
-        <span class="font-mono text-[10px] uppercase tracking-widest text-cyan/70">${s.tag}</span>
-      </div>
-      <p class="text-dim text-sm md:text-base mt-1 max-w-md">${s.desc}</p>
-    </div>
-    <span class="hidden md:block font-mono text-xs text-dim opacity-0 group-hover:opacity-100 transition-opacity duration-300">→</span>
-  </div>
-`).join('') + '<div class="row-line"></div>';
-
-/* ===================== LENIS SMOOTH SCROLL ===================== */
-const lenis = new Lenis({
-  duration: 1.15,
-  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-  smoothWheel: true,
-});
-function raf(time){ lenis.raf(time); requestAnimationFrame(raf); }
-requestAnimationFrame(raf);
-
-gsap.registerPlugin(ScrollTrigger);
-lenis.on('scroll', ScrollTrigger.update);
-gsap.ticker.add((time)=>{ lenis.raf(time * 1000); });
-gsap.ticker.lagSmoothing(0);
-
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-/* ===================== FLOATING TUMBLE ASSETS ===================== */
-function initFloaters(container){
-  const floaters = container.querySelectorAll('.floater');
-  floaters.forEach((el, i) => {
-    const depth = parseFloat(el.dataset.depth || 0.4);
-    gsap.set(el, {
-      rotateX: gsap.utils.random(-20, 20),
-      rotateY: gsap.utils.random(-20, 20),
-      rotateZ: gsap.utils.random(-8, 8),
-      transformPerspective: 900,
-    });
-
-    if(!reduceMotion){
-      // continuous ambient tumble
-      gsap.to(el, {
-        y: '+=' + gsap.utils.random(18, 34),
-        x: '+=' + gsap.utils.random(-16, 16),
-        rotateX: '+=' + gsap.utils.random(30, 70) * (Math.random() > 0.5 ? 1 : -1),
-        rotateY: '+=' + gsap.utils.random(30, 90) * (Math.random() > 0.5 ? 1 : -1),
-        rotateZ: '+=' + gsap.utils.random(-25, 25),
-        duration: gsap.utils.random(6, 11),
-        ease: 'sine.inOut',
-        yoyo: true,
-        repeat: -1,
-        delay: i * 0.3,
-      });
-    }
-
-    // scroll-linked parallax drift + extra spin, scoped to this section
-    gsap.to(el, {
-      y: (i % 2 === 0 ? '-=' : '+=') + (120 * depth),
-      rotateZ: '+=' + (60 * depth) * (i % 2 === 0 ? 1 : -1),
-      ease: 'none',
-      scrollTrigger: {
-        trigger: container,
-        start: 'top bottom',
-        end: 'bottom top',
-        scrub: 1.2,
-      }
-    });
-  });
-}
-initFloaters(document.getElementById('hero-floaters'));
-initFloaters(document.getElementById('video-floaters'));
-
-/* Hero entrance */
-gsap.from('#hero h1 span', {
-  y: 60, opacity: 0, rotateX: 40, duration: 1.1, stagger: 0.12, ease: 'power4.out', delay: 0.2
-});
-gsap.from('#hero p, #hero .cta-btn, #hero a[href="#contact"]', {
-  y: 20, opacity: 0, duration: 0.9, stagger: 0.08, ease: 'power3.out', delay: 0.7
-});
-
-/* Marquee */
-gsap.to('#marquee', {
-  xPercent: -50,
-  ease: 'none',
-  duration: 22,
-  repeat: -1,
-});
-/* ===================== SERVICES PINNED SCROLL TIMELINE ===================== */
-const servicesSection = document.getElementById('services');
-const serviceRows = gsap.utils.toArray('.service-row');
-
-if (servicesSection && serviceRows.length) {
-  // 1. تصفير الحالة الابتدائية لجميع الصفوف (إخفاؤها تماماً وإزاحتها للأسفل)
-  gsap.set(serviceRows, { opacity: 0, y: 50, rotateX: 15 });
-
-  if (!reduceMotion) {
-    // 2. جعل الصفوف تتموضع فوق بعضها بشكل مطلق ليتم إظهارها واحدة تلو الأخرى في نفس المكان
-    // نترك الصف الأول يظهر بشكل طبيعي، والبقية يتم التحكم بهم
-    serviceRows.forEach((row, index) => {
-      if (index > 0) {
-        row.style.position = 'absolute';
-        row.style.top = '0';
-        row.style.left = '0';
-        row.style.width = '100%';
-      }
-    });
-
-    // تحويل الحاوية الأساسية إلى وضع نسبي لضبط الـ absolute المضاف حديثاً
-    listEl.classList.add('relative', 'min-h-[450px]', 'md:min-h-[500px]');
-
-    // 3. إنشاء التايم لاين وتثبيت السكشن بالكامل (Pin) أثناء التمرير
-    const pinTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: servicesSection,
-        start: 'top top',       // يبدأ التثبيت بمجرد وصول السكشن لأعلى الشاشة
-        end: `+=${serviceRows.length * 100}%`, // مدة التثبيت تعتمد على عدد الخدمات ليعطي عمق للسكرول
-        scrub: 1,               // ربط الحركة بالكامل وبشكل ناعم بـ "عجلة" السكرول
-        pin: true,              // تثبيت السكشن في الشاشة
-        anticipatePin: 1,
-      }
-    });
-
-    // 4. بناء تتابع حركات الـ Show/Hide لكل خدمة
-    serviceRows.forEach((row, index) => {
-      // أنيميشن ظهور الخدمة الحالية
-      pinTl.to(row, {
-        opacity: 1,
-        y: 0,
-        rotateX: 0,
-        duration: 1,
-        ease: 'power2.out',
-      });
-
-      // إذا لم تكن هذه هي الخدمة الأخيرة، قم بإخفائها وتصعيدها للأعلى لإفساح المجال للخدمة التالية
-      if (index < serviceRows.length - 1) {
-        pinTl.to(row, {
-          opacity: 0,
-          y: -50,
-          rotateX: -15,
-          duration: 0.8,
-          ease: 'power2.in',
-        }, '+=0.5'); // يترك مسافة زمنية صغيرة تظل فيها الخدمة مقروءة قبل الانتقال للتالية
-      }
-    });
-  } else {
-    // في حال تفعيل وضع تقليل الحركة (Reduced Motion) تظهر بشكل طبيعي متتابع بلا تعقيد
-    const serviceTimeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: servicesSection,
-        start: 'top 75%',
-        toggleActions: 'play none none reverse',
-      }
-    });
-    serviceTimeline.to(serviceRows, { opacity: 1, y: 0, rotateX: 0, duration: 0.6, stagger: 0.15 });
-  }
-}
-
-/* Services section intro scroll animation + orb parallax */
-if (!reduceMotion && servicesSection) {
-  const servicesOrb = servicesSection.querySelector('.orb');
-  const servicesIntro = servicesSection.querySelector('.relative.z-10.mb-16.max-w-2xl.reveal-on-scroll');
-
-  if (servicesIntro) {
-    gsap.fromTo(servicesIntro,
-      { opacity: 0, y: 30, rotateX: 18 },
-      {
-        opacity: 1,
-        y: 0,
-        rotateX: 0,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: servicesSection,
-          start: 'top 85%',
-          end: 'top 30%',
-          scrub: 1,
-        }
-      }
-    );
-  }
-
-  if (servicesOrb) {
-    gsap.fromTo(servicesOrb,
-      { y: 20, x: 0, scale: 0.98, rotateZ: -6 },
-      {
-        y: -120,
-        x: 60,
-        scale: 1.12,
-        rotateZ: 12,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: servicesSection,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: 1.2,
-        }
-      }
-    );
-  }
-}
-
-/* Video section stat counters + heading reveal */
-gsap.from('#video h2, #video p, #video .grid > div', {
-  y: 30, opacity: 0, duration: 0.9, stagger: 0.08, ease: 'power3.out',
-  scrollTrigger: { trigger: '#video', start: 'top 70%' }
-});
-
-/* CTA reveal */
-gsap.from('#contact h2, #contact p, #contact a', {
-  y: 30, opacity: 0, duration: 1, stagger: 0.1, ease: 'power3.out',
-  scrollTrigger: { trigger: '#contact', start: 'top 75%' }
-});
-
-/* Scroll reveal observer for additional elements */
-const revealElements = document.querySelectorAll('.reveal-on-scroll');
-const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-if(reduceMotionQuery.matches){
-  revealElements.forEach((el) => el.classList.add('is-visible'));
-} else {
-  const revealObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach((entry) => {
-      if(entry.isIntersecting){
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.2, rootMargin: '0px 0px -10% 0px' });
-
-  revealElements.forEach((el) => revealObserver.observe(el));
-}
-</script>
+<script src="main.js"></script>
 </body>
 </html
