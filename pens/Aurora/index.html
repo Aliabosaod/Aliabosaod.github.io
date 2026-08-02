@@ -46,29 +46,37 @@
 </head>
 
 <body class="bg-obsidian grain overflow-x-hidden">
-<!-- ============ PAPER RIP OVERLAY ============ -->
-<div id="paper-overlay" class="fixed inset-0 z-[100] overflow-hidden pointer-events-none" aria-hidden="true">
-  <svg id="paper-svg" class="block w-full h-full" width="100%" height="100%">
-    <defs>
-      <radialGradient id="paperLight" cx="50%" cy="50%" r="80%">
-        <stop offset="0%" stop-color="#212123"/>
-        <stop offset="55%" stop-color="#1c1c1f"/>
-        <stop offset="100%" stop-color="#1a1a1a"/>
-      </radialGradient>
-      <mask id="ripMask" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%" mask-type="luminance">
-        <rect width="100%" height="100%" fill="#ffffff"/>
-        <g id="ripWrap">
-          <g id="ripScale">
-            <path id="ripHalo" fill="#4d4d4d"/>
-            <path id="ripPath" fill="#000000"/>
-          </g>
+<!-- ============ CRT INK SPLATTER INTRO ============ -->
+<div id="crt-overlay" aria-hidden="true">
+  <div id="crt-frame">
+    <!-- شاشة CRT بيضاء بحواف دائرية -->
+    <div id="crt-screen">
+      <svg id="ink-svg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <radialGradient id="thermalGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#ff7a2e"/>
+            <stop offset="50%" stop-color="#e8390d"/>
+            <stop offset="100%" stop-color="#a3120f"/>
+          </radialGradient>
+          <filter id="inkBlur" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="16"/>
+          </filter>
+        </defs>
+        <g id="splatter-group">
+          <path id="ink-glow" fill="url(#thermalGlow)" filter="url(#inkBlur)"/>
+          <g id="ink-dots"></g>
+          <path id="ink-body" fill="#0b0b0b"/>
+          <g id="ink-drops"></g>
         </g>
-      </mask>
-    </defs>
-    <g mask="url(#ripMask)">
-      <rect width="100%" height="100%" fill="url(#paperLight)"/>
-    </g>
-  </svg>
+      </svg>
+    </div>
+    <!-- AURORA logo cells (تتولد من تكثف الحبر) -->
+    <div id="logo-stage" aria-hidden="true">
+      <svg id="logo-svg" viewBox="0 0 1000 200" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 26px rgba(76,251,234,0.18))">
+        <g id="logo3d"></g>
+      </svg>
+    </div>
+  </div>
 </div>
 <!-- ============ NAV ============ -->
 <header class="fixed top-0 left-0 w-full z-50 px-6 md:px-10 py-5 flex items-center justify-between">
@@ -91,13 +99,6 @@
   <div class="orb w-[38rem] h-[38rem] bg-cosmic/40 -top-40 -left-40"></div>
   <div class="orb w-[30rem] h-[30rem] bg-violet/30 top-1/3 right-0"></div>
   <div class="orb w-[24rem] h-[24rem] bg-cyan/20 bottom-0 left-1/4"></div>
-
-  <!-- AURORA particle logo stage (يظهر بعد كشف الورق) -->
-  <div id="logo-stage" class="absolute inset-0 z-[5] flex items-center justify-center pointer-events-none" aria-hidden="true">
-    <svg id="logo-svg" class="w-full h-full opacity-0" viewBox="0 0 1000 200" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 26px rgba(76,251,234,0.14))">
-      <g id="logo3d"></g>
-    </svg>
-  </div>
 
   <!-- Floating creative assets -->
   <div id="hero-floaters" class="absolute inset-0 pointer-events-none">
