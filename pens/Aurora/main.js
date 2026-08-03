@@ -80,7 +80,7 @@ function buildInkSplatter() {
 
 // شعار AURORA الحقيقي: مصدر خلايا النقاط بدلاً من نص مؤقت
 const auroraLogoImage = new Image();
-auroraLogoImage.src = 'logo 2k - without background.png';
+auroraLogoImage.src = 'imgs/logo-2k-without-background.png';
 
 window.addEventListener('load', () => {
   // إيقاف السكرول الناعم مؤقتاً أثناء المقدمة
@@ -163,33 +163,19 @@ window.addEventListener('load', () => {
 });
 /* ===================== SERVICE DATA ===================== */
 const services = [
-  { n:'01', name:'Brand Identity', tag:'Branding', desc:'Naming, logo systems and visual language built to last.' },
-  { n:'02', name:'Visual Systems', tag:'Branding', desc:'Scalable design tokens, grids and component libraries.' },
-  { n:'03', name:'Packaging Design', tag:'Branding', desc:'Shelf-ready structural and print design.' },
-  { n:'04', name:'Digital Design (UI/UX)', tag:'Digital', desc:'Interfaces engineered for clarity and conversion.' },
-  { n:'05', name:'Web Development', tag:'Digital', desc:'Fast, animated builds shipped on modern stacks.' },
-  { n:'06', name:'Paid Social &amp; Ads', tag:'Digital', desc:'Performance creative across Meta, TikTok and search.' },
-  { n:'07', name:'Performance Marketing', tag:'Digital', desc:'Full-funnel media planning and optimisation.' },
-  { n:'08', name:'Brand Strategy', tag:'Strategy', desc:'Positioning, architecture and go-to-market frameworks.' },
-  { n:'09', name:'Content Strategy', tag:'Strategy', desc:'Editorial systems that keep channels in rhythm.' },
-  { n:'10', name:'Video Editing', tag:'Motion', desc:'Story-led cuts for campaigns, social and film.' },
-  { n:'11', name:'Motion Graphics', tag:'Motion', desc:'Kinetic type, 2D/3D-simulated animation and VFX polish.' },
+  { en:'Brand Identity & Strategy',           ar:'الهوية البصرية والاستراتيجية',           tags:['Logo Design','Color Palette','Typography','Brand Guidelines'], img:'https://picsum.photos/seed/aurora-svc-01/900/1100' },
+  { en:'Graphic Design',                      ar:'التصميم الجرافيكي',                     tags:['Social Media Posts','Campaign Visuals','Digital Graphics'], img:'https://picsum.photos/seed/aurora-svc-02/900/1100' },
+  { en:'Digital & Social Media Design',       ar:'التصميم الرقمي وتصاميم السوشيال ميديا',  tags:['Website Graphics','App UI Design','Email Campaign Design','Social Media Assets'], img:'https://picsum.photos/seed/aurora-svc-03/900/1100' },
+  { en:'Paid Advertising & Boosting',         ar:'الإعلانات المموّلة والترويج الرقمي',     tags:['Sponsored Ads','Social Media Boosting','Ad Campaign Design','Performance Ads'], img:'https://picsum.photos/seed/aurora-svc-04/900/1100' },
+  { en:'Print & Collateral Design',           ar:'تصميم المطبوعات والمواد التسويقية',      tags:['Brochures','Business Cards','Posters','Catalogs','Company Profiles','Annual Reports'], img:'https://picsum.photos/seed/aurora-svc-05/900/1100' },
+  { en:'Packaging Design',                    ar:'تصميم التغليف',                        tags:['Product Packaging','Labels','Boxes','Bags & Wrapping'], img:'https://picsum.photos/seed/aurora-svc-06/900/1100' },
+  { en:'Environmental & Event Graphics',      ar:'تصاميم الفعاليات والمساحات',            tags:['Signage','Exhibition Displays','Trade Show Booths','Retail Graphics'], img:'https://picsum.photos/seed/aurora-svc-07/900/1100' },
+  { en:'Full-Service Digital Solutions',      ar:'الحلول الرقمية المتكاملة',              tags:['Website Design','Digital Marketing','SEO','Content Development','Website Maintenance'], img:'https://picsum.photos/seed/aurora-svc-08/900/1100' },
+  { en:'Strategy Consulting',                 ar:'الاستشارات الاستراتيجية',               tags:['Market Positioning','Growth Strategy','Brand Strategy','Long-Term Planning'], img:'https://picsum.photos/seed/aurora-svc-09/900/1100' },
+  { en:'Business Advisory',                   ar:'استشارات الأعمال',                     tags:['Business Model Development','Operations Guidance','Business Planning','Future Readiness'], img:'https://picsum.photos/seed/aurora-svc-10/900/1100' },
+  { en:'Portfolio & Creative Platforms',      ar:'البورتفوليو والمنصات الإبداعية',        tags:['Portfolio Design','Portfolio Websites','Creative Presentations','Personal & Brand Profiles'], img:'https://picsum.photos/seed/aurora-svc-11/900/1100' },
+  { en:'Video Editing & Post-Production',     ar:'مونتاج الفيديو والتحريك الإبداعي',      tags:['Commercial & Promo Editing','Reels & Short-Form Content','Motion Graphics','VFX & Color Grading'], img:'https://picsum.photos/seed/aurora-svc-12/900/1100' },
 ];
-
-const listEl = document.getElementById('service-list');
-listEl.innerHTML = services.map(s => `
-  <div class="service-row row-line group relative flex items-center gap-6 md:gap-10 py-7 md:py-9 opacity-0 translate-y-10">
-    <span class="rev-num font-mono text-sm md:text-base text-dim w-10 shrink-0">${s.n}</span>
-    <div class="flex-1">
-      <div class="flex flex-col md:flex-row md:items-baseline md:gap-4">
-        <h3 class="font-display text-2xl md:text-4xl tracking-tight text-bone group-hover:text-aurora transition-colors duration-300">${s.name}</h3>
-        <span class="font-mono text-[10px] uppercase tracking-widest text-cyan/70">${s.tag}</span>
-      </div>
-      <p class="text-dim text-sm md:text-base mt-1 max-w-md">${s.desc}</p>
-    </div>
-    <span class="hidden md:block font-mono text-xs text-dim opacity-0 group-hover:opacity-100 transition-opacity duration-300">→</span>
-  </div>
-`).join('') + '<div class="row-line"></div>';
 
 /* ===================== LENIS SMOOTH SCROLL ===================== */
 const lenis = new Lenis({
@@ -259,118 +245,119 @@ gsap.to('#marquee', {
   duration: 22,
   repeat: -1,
 });
-/* ===================== SERVICES PINNED SCROLL TIMELINE ===================== */
-const servicesSection = document.getElementById('services');
-const serviceRows = gsap.utils.toArray('.service-row');
+/* ===================== SERVICES — NATURAL FLOW + REVEAL (12) ===================== */
+const servicesTrack = document.getElementById('services-snap');
+const servicesSectionEl = document.getElementById('services');
 
-if (servicesSection && serviceRows.length) {
-  // 1. تصفير الحالة الابتدائية لجميع الصفوف (إخفاؤها تماماً وإزاحتها للأسفل)
-  gsap.set(serviceRows, { opacity: 0, y: 50, rotateX: 15 });
+if (servicesTrack && servicesSectionEl) {
+  // ---- build 12 full-screen slides (alternating 50/50 zig-zag) ----
+  services.forEach((s, i) => {
+    const num = String(i + 1).padStart(2, '0');
+    const slide = document.createElement('section');
+    slide.className = 'svc-slide' + (i % 2 === 1 ? ' svc-flip' : '');
+    slide.setAttribute('aria-label', 'Service ' + (i + 1));
+    slide.innerHTML = `
+      <div class="svc-watermark">${num}</div>
+      <div class="svc-text">
+        <span class="svc-index">${num} / 12</span>
+        <h2>
+          <span class="svc-title-en">${s.en}</span>
+          <span class="svc-title-ar" dir="rtl">${s.ar}</span>
+        </h2>
+        <ul class="svc-tags">${s.tags.map(t => `<li>${t}</li>`).join('')}</ul>
+      </div>
+      <div class="svc-visual">
+        <div class="svc-glow"></div>
+        <div class="svc-card">
+          <img src="${s.img}" alt="${s.en}" loading="lazy">
+          <span class="svc-chip">Aurora · ${num}</span>
+        </div>
+      </div>`;
+    servicesTrack.appendChild(slide);
+  });
 
+  const slides = gsap.utils.toArray('.svc-slide');
+  const TOTAL = services.length;
+  const counterEl = document.getElementById('svc-counter');
+  const dotsNav = document.getElementById('svc-dots');
+  let svcActive = 0;
+  let svcInView = false;
+
+  const svcGoTo = (i) => {
+    i = Math.max(0, Math.min(TOTAL - 1, i));
+    if (typeof lenis !== 'undefined') lenis.scrollTo(slides[i], { offset: 0, duration: 1.1 });
+    else window.scrollTo({ top: slides[i].offsetTop, behavior: 'smooth' });
+  };
+
+  // ---- side dots ----
+  services.forEach((_, i) => {
+    const b = document.createElement('button');
+    b.setAttribute('aria-label', 'Go to service ' + (i + 1));
+    b.addEventListener('click', () => svcGoTo(i));
+    dotsNav.appendChild(b);
+  });
+
+  function svcActivate(i) {
+    svcActive = i;
+    document.querySelectorAll('#svc-dots button').forEach((d, di) => d.classList.toggle('is-active', di === i));
+    counterEl.innerHTML = `<b>${String(i + 1).padStart(2, '0')}</b> / ${String(TOTAL).padStart(2, '0')}`;
+  }
+
+  // ---- 3D tilt + inner image parallax ----
+  document.querySelectorAll('.svc-card').forEach((card) => {
+    const img = card.querySelector('img');
+    gsap.set(card, { transformPerspective: 900 });
+    const rX = gsap.quickTo(card, 'rotationX', { duration: 0.6, ease: 'power3.out' });
+    const rY = gsap.quickTo(card, 'rotationY', { duration: 0.6, ease: 'power3.out' });
+    const pX = gsap.quickTo(img, 'x', { duration: 0.6, ease: 'power3.out' });
+    const pY = gsap.quickTo(img, 'y', { duration: 0.6, ease: 'power3.out' });
+
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width;
+      const py = (e.clientY - r.top) / r.height;
+      rY(gsap.utils.mapRange(0, 1, -8, 8, px));
+      rX(gsap.utils.mapRange(0, 1, 7, -7, py));
+      pX(gsap.utils.mapRange(0, 1, -18, 18, px));
+      pY(gsap.utils.mapRange(0, 1, -18, 18, py));
+    });
+    card.addEventListener('mouseleave', () => { rX(0); rY(0); pX(0); pY(0); });
+  });
+
+  // ---- HUD follows scroll (dots + counter update as each slide passes) ----
+  slides.forEach((sec, i) => {
+    ScrollTrigger.create({
+      trigger: sec,
+      start: 'top 55%',
+      end: 'bottom 45%',
+      onToggle: (self) => { if (self.isActive) svcActivate(i); },
+    });
+  });
+
+  // ---- reveal each slide's content as it enters the viewport ----
   if (!reduceMotion) {
-    // 2. جعل الصفوف تتموضع فوق بعضها بشكل مطلق ليتم إظهارها واحدة تلو الأخرى في نفس المكان
-    // نترك الصف الأول يظهر بشكل طبيعي، والبقية يتم التحكم بهم
-    serviceRows.forEach((row, index) => {
-      if (index > 0) {
-        row.style.position = 'absolute';
-        row.style.top = '0';
-        row.style.left = '0';
-        row.style.width = '100%';
-      }
-    });
-
-    // تحويل الحاوية الأساسية إلى وضع نسبي لضبط الـ absolute المضاف حديثاً
-    listEl.classList.add('relative', 'min-h-[450px]', 'md:min-h-[500px]');
-
-    // 3. إنشاء التايم لاين وتثبيت السكشن بالكامل (Pin) أثناء التمرير
-    const pinTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: servicesSection,
-        start: 'top top',       // يبدأ التثبيت بمجرد وصول السكشن لأعلى الشاشة
-        end: `+=${serviceRows.length * 100}%`, // مدة التثبيت تعتمد على عدد الخدمات ليعطي عمق للسكرول
-        scrub: 1,               // ربط الحركة بالكامل وبشكل ناعم بـ "عجلة" السكرول
-        pin: true,              // تثبيت السكشن في الشاشة
-        anticipatePin: 1,
-      }
-    });
-
-    // 4. بناء تتابع حركات الـ Show/Hide لكل خدمة
-    serviceRows.forEach((row, index) => {
-      // أنيميشن ظهور الخدمة الحالية
-      pinTl.to(row, {
-        opacity: 1,
-        y: 0,
-        rotateX: 0,
-        duration: 1,
-        ease: 'power2.out',
+    gsap.utils.toArray('.svc-slide').forEach((sec) => {
+      gsap.from(sec.querySelectorAll('.svc-text, .svc-visual'), {
+        y: 50, opacity: 0, duration: 0.8, stagger: 0.2, ease: 'power3.out',
+        scrollTrigger: { trigger: sec, start: 'top 80%', toggleActions: 'play none none reverse' },
       });
-
-      // إذا لم تكن هذه هي الخدمة الأخيرة، قم بإخفائها وتصعيدها للأعلى لإفساح المجال للخدمة التالية
-      if (index < serviceRows.length - 1) {
-        pinTl.to(row, {
-          opacity: 0,
-          y: -50,
-          rotateX: -15,
-          duration: 0.8,
-          ease: 'power2.in',
-        }, '+=0.5'); // يترك مسافة زمنية صغيرة تظل فيها الخدمة مقروءة قبل الانتقال للتالية
-      }
     });
-  } else {
-    // في حال تفعيل وضع تقليل الحركة (Reduced Motion) تظهر بشكل طبيعي متتابع بلا تعقيد
-    const serviceTimeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: servicesSection,
-        start: 'top 75%',
-        toggleActions: 'play none none reverse',
-      }
-    });
-    serviceTimeline.to(serviceRows, { opacity: 1, y: 0, rotateX: 0, duration: 0.6, stagger: 0.15 });
-  }
-}
-
-/* Services section intro scroll animation + orb parallax */
-if (!reduceMotion && servicesSection) {
-  const servicesOrb = servicesSection.querySelector('.orb');
-  const servicesIntro = servicesSection.querySelector('.relative.z-10.mb-16.max-w-2xl.reveal-on-scroll');
-
-  if (servicesIntro) {
-    gsap.fromTo(servicesIntro,
-      { opacity: 0, y: 30, rotateX: 18 },
-      {
-        opacity: 1,
-        y: 0,
-        rotateX: 0,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: servicesSection,
-          start: 'top 85%',
-          end: 'top 30%',
-          scrub: 1,
-        }
-      }
-    );
   }
 
-  if (servicesOrb) {
-    gsap.fromTo(servicesOrb,
-      { y: 20, x: 0, scale: 0.98, rotateZ: -6 },
-      {
-        y: -120,
-        x: 60,
-        scale: 1.12,
-        rotateZ: 12,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: servicesSection,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: 1.2,
-        }
-      }
-    );
-  }
+  svcActivate(0);
+
+  // ---- keyboard nav (only while the section is on screen) ----
+  ScrollTrigger.create({
+    trigger: servicesSectionEl,
+    start: 'top bottom',
+    end: 'bottom top',
+    onToggle: (self) => { svcInView = self.isActive; },
+  });
+  window.addEventListener('keydown', (e) => {
+    if (!svcInView) return;
+    if (e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); svcGoTo(svcActive + 1); }
+    if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); svcGoTo(svcActive - 1); }
+  });
 }
 
 /* Video section stat counters + heading reveal */
@@ -433,8 +420,8 @@ function assembleLogoStage(immediateColor) {
 
   // 1) اللوغو الحقيقي: صورة واضحة تماماً في المركز (مواد/نص الصورة تظهر كاملة)
   const imageEl = document.createElementNS(NS, 'image');
-  imageEl.setAttribute('href', 'logo 2k - without background.png');
-  imageEl.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', 'logo 2k - without background.png');
+  imageEl.setAttribute('href', 'imgs/logo-2k-without-background.png');
+  imageEl.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', 'imgs/logo-2k-without-background.png');
   imageEl.setAttribute('preserveAspectRatio', 'xMidYMid meet');
   if (auroraLogoImage.complete && auroraLogoImage.naturalWidth > 0) {
     const iw = auroraLogoImage.naturalWidth, ih = auroraLogoImage.naturalHeight;

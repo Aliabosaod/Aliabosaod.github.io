@@ -8,7 +8,7 @@
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 
 <!-- Tailwind -->
 <script src="https://cdn.tailwindcss.com"></script>
@@ -177,7 +177,7 @@
     </h1>
     <p class="max-w-md mt-8 text-dim text-base md:text-lg font-body">
       Aurora Media builds brand systems, digital campaigns and video that move —
-      eleven disciplines, one studio, gliding across your scroll.
+      twelve disciplines, one studio, gliding across your scroll.
     </p>
     <div class="mt-10 flex items-center gap-5">
       <a href="#services" class="cta-btn font-mono text-xs uppercase tracking-widest px-6 py-3.5 rounded-full font-medium">
@@ -202,22 +202,12 @@
   </div>
 </section>
 
-<!-- ============ SERVICES ============ -->
-<section id="services" class="relative py-28 md:py-36 px-6 md:px-10 perspective overflow-hidden">
-
-  <div class="orb w-[26rem] h-[26rem] bg-violet/20 top-0 right-0"></div>
-
-  <div class="relative z-10 mb-16 md:mb-24 max-w-2xl reveal-on-scroll">
-    <p class="font-mono text-xs tracking-[0.3em] text-cyan/80 uppercase mb-4">The Index</p>
-    <h2 class="font-display font-semibold text-4xl md:text-6xl leading-[1.02] tracking-tight">
-      Eleven disciplines, <span class="text-aurora">read in order.</span>
-    </h2>
-    <p class="mt-5 text-dim">From first mark to final cut — the sequence we take every brand through.</p>
-  </div>
-
-  <div id="service-list" class="relative z-10 border-t border-bone/10">
-    <!-- rows injected structure below -->
-  </div>
+<!-- ============ SERVICES (natural flow ×12) ============ -->
+<section id="services" class="relative">
+  <!-- 12 full-screen service blocks in normal document flow (injected by main.js); each reveals as it scrolls into view -->
+  <div id="services-snap"></div>
+  <nav id="svc-dots" aria-label="Services navigation"></nav>
+  <div id="svc-counter"><b>01</b> / 12</div>
 </section>
 
 <!-- ============ VIDEO EDITING SHOWCASE ============ -->
