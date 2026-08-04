@@ -1,164 +1,279 @@
-/* ===================== CRT INK SPLATTER INTRO ===================== */
-// توليد مسار حبر عضوي انفجاري مع أطراف/أذرع ممدودة (Random-walk لنصف القطر)
-function buildSplatter(cx, cy, r, points, amp) {
-  let d = '';
-  let cur = r;
-  let target = r;
-  const pts = [];
-  const step = (Math.PI * 2) / points;
-  for (let i = 0; i < points; i++) {
-    if (i % 9 === 0) {
-      target = Math.random() < 0.34
-        ? r * (1.3 + Math.random() * 0.7)   // أطراف/أذرع حبر ممدودة
-        : r * (0.8 + Math.random() * 0.4);
-    }
-    cur += (target - cur) * 0.13 + (Math.random() - 0.5) * amp;
-    const a = i * step;
-    const rr = Math.max(5, cur);
-    pts.push({ a: a, r: rr });
-    d += (i === 0 ? 'M' : 'L') + (cx + Math.cos(a) * rr).toFixed(1) + ' ' + (cy + Math.sin(a) * rr).toFixed(1) + ' ';
-  }
-  return { d: d + 'Z', pts: pts };
-}
-
-// ألوان التوهج الحراري: برتقالي ساطع على الحافة نحو أحمر داكن في العمق
-function thermalColor(t) {
-  const a = [255, 146, 40], b = [198, 26, 10];
-  return 'rgb(' + Math.round(a[0] + (b[0] - a[0]) * t) + ',' +
-    Math.round(a[1] + (b[1] - a[1]) * t) + ',' +
-    Math.round(a[2] + (b[2] - a[2]) * t) + ')';
-}
-
-// بناء كتلة الحبر: جسم أسود + هالة حرارية مشوشة + نقاط هالف-تون على الحواف + قطرات متطايرة
-function buildInkSplatter() {
-  const svg = document.getElementById('ink-svg');
-  if (!svg) return [];
-  const body = svg.querySelector('#ink-body');
-  const glow = svg.querySelector('#ink-glow');
-  const dotsEl = svg.querySelector('#ink-dots');
-  const dropsEl = svg.querySelector('#ink-drops');
-  const NS = 'http://www.w3.org/2000/svg';
-
-  const cx = 500, cy = 500, R = 340;
-  const res = buildSplatter(cx, cy, R, 240, R * 0.16);
-  body.setAttribute('d', res.d);
-  glow.setAttribute('d', res.d);
-
-  // نقاط الهالف-تون الحرارية في شريط قريب من حافة الحبر
-  const frag = document.createDocumentFragment();
-  for (let i = 0; i < res.pts.length; i += 2) {
-    const p = res.pts[i];
-    const a = p.a + (Math.random() - 0.5) * 0.05;
-    const depth = Math.random() * 0.16;
-    const rr = p.r * (1 - depth);
-    const c = document.createElementNS(NS, 'circle');
-    c.setAttribute('cx', (cx + Math.cos(a) * rr).toFixed(1));
-    c.setAttribute('cy', (cy + Math.sin(a) * rr).toFixed(1));
-    c.setAttribute('r', ((6.5 - depth * 22) * (0.8 + Math.random() * 0.5)).toFixed(1));
-    c.setAttribute('fill', thermalColor(depth));
-    c.setAttribute('opacity', Math.max(0, 1 - depth * 3).toFixed(2));
-    frag.appendChild(c);
-  }
-  dotsEl.appendChild(frag);
-
-  // قطرات حبر متطايرة (سوداء مع بعض النقاط الحرارية)
-  const dFrag = document.createDocumentFragment();
-  for (let i = 0; i < 16; i++) {
-    const a = Math.random() * Math.PI * 2;
-    const dist = R * (1.05 + Math.random() * 0.5);
-    const c = document.createElementNS(NS, 'circle');
-    c.setAttribute('class', 'ink-drop');
-    c.setAttribute('cx', (cx + Math.cos(a) * dist).toFixed(1));
-    c.setAttribute('cy', (cy + Math.sin(a) * dist).toFixed(1));
-    c.setAttribute('r', (3 + Math.random() * 7).toFixed(1));
-    c.setAttribute('fill', i % 3 === 0 ? thermalColor(Math.random() * 0.4) : '#0b0b0b');
-    dFrag.appendChild(c);
-  }
-  dropsEl.appendChild(dFrag);
-  return dropsEl.querySelectorAll('.ink-drop');
-}
-
-// شعار AURORA الحقيقي: مصدر خلايا النقاط بدلاً من نص مؤقت
-const auroraLogoImage = new Image();
-auroraLogoImage.src = 'imgs/logo-2k-without-background.png';
-
+/* ===================== CYBERNETIC INTRO (biometric → tunnel → logo) ===================== */
 window.addEventListener('load', () => {
   // إيقاف السكرول الناعم مؤقتاً أثناء المقدمة
   if (typeof lenis !== 'undefined') lenis.stop();
 
-  const overlay = document.getElementById('crt-overlay');
-  const screen = document.getElementById('crt-screen');
+  const intro = document.getElementById('cyber-intro');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // إخفاء محتوى الهيرو حتى يُكشف عبر تلاشي الشاشة البيضاء
+  // إخفاء محتوى الهيرو حتى يُكشف في نهاية المقدمة
   gsap.set('#hero h1 span', { y: 100, opacity: 0, rotateX: 45 });
   gsap.set('#hero p, #hero .cta-btn', { y: 30, opacity: 0 });
   gsap.set('.floater', { scale: 0, opacity: 0, rotateX: gsap.utils.random(-40, 40), rotateY: gsap.utils.random(-40, 40) });
 
   const finish = () => {
     if (typeof lenis !== 'undefined') lenis.start();
-    // نقل منصة الشعار إلى الهيرو لتبقى في خلفية الصفحة بعد انتهاء المقدمة
-    const hero = document.getElementById('hero');
-    const stage = document.getElementById('logo-stage');
-    if (stage && hero) {
-      hero.appendChild(stage);
-      gsap.set(stage, { zIndex: 5, opacity: 0.6 });
-    }
-    if (overlay) overlay.remove();
+    if (intro) intro.remove();
   };
 
   const introTl = gsap.timeline({ onComplete: finish });
 
-  // إظهار محتوى الهيرو بالتتابع بعد تلاشي الشاشة البيضاء
+  // إظهار محتوى الهيرو بالتتابع بعد تلاشي المقدمة
   const heroReveal = (tl, at) => {
     tl.to('#hero h1 span', { y: 0, opacity: 1, rotateX: 0, duration: 1.2, stagger: 0.15, ease: 'power4.out' }, at)
       .to('.floater', { scale: 1, opacity: 1, duration: 1.3, stagger: 0.08, ease: 'elastic.out(1, 0.75)' }, at + 0.3)
       .to('#hero p, #hero .cta-btn, #hero a[href="#contact"]', { y: 0, opacity: 1, duration: 1, stagger: 0.1, ease: 'power3.out' }, at + 0.5);
   };
 
-  // كشف الشعار: ينتظر اكتمال تحميل صورة اللوغو الحقيقية قبل البناء والإظهار
-  const revealLogo = (immediateColor) => {
-    const run = () => assembleLogoStage(immediateColor);
-    if (auroraLogoImage.complete && auroraLogoImage.naturalWidth > 0) run();
-    else auroraLogoImage.addEventListener('load', run, { once: true });
+  // إمالة ثلاثية الأبعاد للشعار تتبع المؤشر
+  let tiltReady = false;
+  const setupTilt = () => {
+    const tilt = document.getElementById('logo-tilt');
+    if (!tilt || tiltReady) return;
+    tiltReady = true;
+    const rx = gsap.quickTo(tilt, 'rotationX', { duration: 0.6, ease: 'power3.out' });
+    const ry = gsap.quickTo(tilt, 'rotationY', { duration: 0.6, ease: 'power3.out' });
+    window.addEventListener('pointermove', (e) => {
+      const nx = (e.clientX / window.innerWidth) * 2 - 1;
+      const ny = (e.clientY / window.innerHeight) * 2 - 1;
+      ry(nx * 12);
+      rx(-ny * 12);
+    }, { passive: true });
   };
 
-  if (overlay && !reduceMotion) {
-    const drops = buildInkSplatter();
+  // تسليم الشعار الدائم إلى مركز الهيرو بعد المشهد الثالث
+  const emitParticles = () => {
+    const fx = document.getElementById('logo-fx');
+    if (!fx) return;
+    const N = 26;
+    for (let i = 0; i < N; i++) {
+      const p = document.createElement('span');
+      p.className = 'fx-particle';
+      const angle = (i / N) * Math.PI * 2 + Math.random() * 0.4;
+      const dist = 34 + Math.random() * 96;
+      p.style.setProperty('--c', i % 2 ? '#00f3ff' : '#ff0055');
+      fx.appendChild(p);
+      gsap.fromTo(p,
+        { xPercent: -50, yPercent: -50, x: 0, y: 0, scale: 1, opacity: 0.85 },
+        {
+          x: Math.cos(angle) * dist,
+          y: Math.sin(angle) * dist,
+          scale: 0, opacity: 0,
+          duration: 1.4 + Math.random() * 1.5,
+          repeat: -1, delay: i * 0.13,
+          ease: 'power2.out',
+        });
+    }
+  };
 
-    // مقياس التغطية: يُحسب من أبعاد الشاشة الفعلية ليضمن غطاءً كاملاً بأي نسبة عرض/ارتفاع
-    const rect = screen.getBoundingClientRect();
-    const scaleUnit = Math.max(rect.width, rect.height) / 1000;
-    const halfDiagVB = (Math.hypot(rect.width, rect.height) / 2) / scaleUnit;
-    const coverScale = Math.max(1.4, halfDiagVB / 250);
-    const dotScale = 0.02;
+  const finalizeLogo = () => {
+    const stage = document.getElementById('logo-stage');
+    if (!stage) return;
+    gsap.set('.logo-slot-fill', { clipPath: 'circle(50% at 50% 50%)' });
+    gsap.set('.logo-slot-ring .ring-solid', { strokeDashoffset: 0 });
+    gsap.set(stage, {
+      position: 'absolute', left: '50%', top: '50%',
+      xPercent: -50, yPercent: -50,
+      width: 'min(38vmin, 320px)', height: 'min(38vmin, 320px)',
+      zIndex: 3, scale: 1, opacity: 1, pointerEvents: 'none',
+    });
+    if (!reduceMotion) {
+      gsap.to('#logo-spin', { rotationY: 360, duration: 16, repeat: -1, ease: 'none' });
+      gsap.to('#logo-spin', { rotationX: 14, yoyo: true, repeat: -1, duration: 3.4, ease: 'sine.inOut' });
+      gsap.to(stage, { y: -16, yoyo: true, repeat: -1, duration: 3.2, ease: 'sine.inOut' });
+      gsap.fromTo('#brand-logo',
+        { filter: 'brightness(0.92) drop-shadow(0 0 16px rgba(0,243,255,0.32)) drop-shadow(0 0 58px rgba(255,0,85,0.22))' },
+        { filter: 'brightness(1.28) drop-shadow(0 0 34px rgba(0,243,255,0.72)) drop-shadow(0 0 92px rgba(255,0,85,0.45))',
+          duration: 2.1, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+      emitParticles();
+    }
+  };
 
-    gsap.set('#splatter-group', { scale: dotScale, rotation: -5, transformOrigin: '50% 50%' });
-    gsap.set('.ink-drop', { scale: 0, opacity: 0 });
+  const reparentLogo = () => {
+    const stage = document.getElementById('logo-stage');
+    const slot = document.getElementById('hero-logo-slot');
+    if (!stage || !slot) return;
+    slot.appendChild(stage);
+    gsap.set(stage, { position: 'absolute', left: '50%', top: '50%', xPercent: -50, yPercent: -50, zIndex: 3, scale: 1, opacity: 1 });
+  };
+
+  // بناء أنفاق/خطوط البيانات لـ scene 2 (خطوط شعاعية + جسيمات)
+  const buildTunnel = () => {
+    const el = document.getElementById('tunnel-streaks');
+    if (!el) return;
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < 30; i++) {
+      const s = document.createElement('span');
+      s.className = 'streak';
+      s.style.setProperty('--a', (i / 30) * 360 + 'deg');
+      s.style.setProperty('--c', i % 2 ? '#ff0055' : '#00f3ff');
+      frag.appendChild(s);
+    }
+    for (let i = 0; i < 20; i++) {
+      const p = document.createElement('span');
+      p.className = 't-particle';
+      const a = (i / 20) * 360 + (Math.random() - 0.5) * 30;
+      const d = window.innerHeight * (0.45 + Math.random() * 0.5);
+      p.style.setProperty('--a', a + 'deg');
+      p.style.setProperty('--d', d.toFixed(0) + 'px');
+      p.style.setProperty('--c', i % 2 ? '#ff0055' : '#00f3ff');
+      frag.appendChild(p);
+    }
+    el.appendChild(frag);
+  };
+
+  // بناء لوحة الدارات الإلكترونية لـ scene 3 (مسارات + عقد متوهجة)
+  const buildCircuits = () => {
+    const traces = document.getElementById('circuit-traces');
+    const nodes = document.getElementById('circuit-nodes');
+    if (!traces || !nodes) return;
+    const NS = 'http://www.w3.org/2000/svg';
+    const W = 1200, H = 800, N = 15;
+    const tf = document.createDocumentFragment();
+    const nf = document.createDocumentFragment();
+    for (let i = 0; i < N; i++) {
+      let x = Math.random() * W, y = Math.random() * H;
+      let d = 'M' + x.toFixed(0) + ' ' + y.toFixed(0);
+      const steps = 3 + Math.floor(Math.random() * 4);
+      for (let s = 0; s < steps; s++) {
+        const len = 70 + Math.random() * 170;
+        if (Math.random() < 0.5) x += (Math.random() < 0.5 ? -1 : 1) * len;
+        else y += (Math.random() < 0.5 ? -1 : 1) * len;
+        x = Math.max(12, Math.min(W - 12, x));
+        y = Math.max(12, Math.min(H - 12, y));
+        d += ' L' + x.toFixed(0) + ' ' + y.toFixed(0);
+      }
+      const path = document.createElementNS(NS, 'path');
+      path.setAttribute('d', d);
+      path.setAttribute('class', 'circuit-trace');
+      path.setAttribute('style', '--c:' + (i % 2 ? '#ff0055' : '#00f3ff'));
+      tf.appendChild(path);
+      const node = document.createElementNS(NS, 'circle');
+      node.setAttribute('cx', x.toFixed(0));
+      node.setAttribute('cy', y.toFixed(0));
+      node.setAttribute('r', '4.5');
+      node.setAttribute('class', 'circuit-node');
+      node.setAttribute('style', '--c:' + (i % 2 ? '#ff0055' : '#00f3ff'));
+      nf.appendChild(node);
+    }
+    traces.appendChild(tf);
+    nodes.appendChild(nf);
+  };
+
+  if (intro && !reduceMotion) {
+    buildTunnel();
+    buildCircuits();
+
+    const scene1 = document.getElementById('scene-scan');
+    const scene2 = document.getElementById('scene-tunnel');
+    const scene3 = document.getElementById('scene-logo');
+    const pctEl = document.getElementById('scan-progress-pct');
+    const fillEl = document.getElementById('scan-progress-fill');
+    const pctState = { v: 0 };
+    const tickVerify = document.getElementById('tick-verify');
+    const reticle = document.querySelector('.reticle');
+    const eyeWrap = document.getElementById('eye-wrap');
+    const beam = document.querySelector('.scan-beam');
+    const gaugeProg = document.getElementById('scan-gauge-prog');
+
+    gsap.set(scene1, { autoAlpha: 1 });
+    gsap.set(scene2, { autoAlpha: 0 });
+    gsap.set(scene3, { autoAlpha: 0 });
+    gsap.set(reticle, { scale: 1.7, autoAlpha: 0 });
+    gsap.set('.iris', { scale: 0.88 });
+    gsap.set(eyeWrap, { scale: 1.14 });
+    gsap.set('.streak', { scaleY: 0.12, autoAlpha: 0 });
+    gsap.set('.t-ring', { scale: 0.35, autoAlpha: 0 });
+    gsap.set('.tunnel-core', { autoAlpha: 0 });
+    gsap.set('.cyber-glow, .eye-hud, .eye-shade, .iris-texture', { autoAlpha: 0 });
+
+    const confirmAccess = () => {
+      if (tickVerify) { tickVerify.classList.add('is-ok', 'verified'); tickVerify.textContent = 'IDENTITY OK'; }
+      const lbl = document.querySelector('.hud-progress-label span:first-child');
+      if (lbl) lbl.textContent = 'ACCESS GRANTED';
+      const lblWrap = document.querySelector('.hud-progress-label');
+      if (lblWrap) lblWrap.classList.add('access');
+    };
 
     introTl
-      // 1) نقطة حبر عضوية صغيرة جداً عند المركز بالضبط (تمكث لحظة ثم تنبض)
-      .to('#splatter-group', { scale: dotScale * 1.8, rotation: 0, duration: 0.5, ease: 'power1.out' }, 0)
-      // 2) انفجار بطيء سينمائي حتى تغطية كامل الشاشة مع حافة هالف-تون حرارية تكتسح الأطراف
-      .to('#splatter-group', { scale: coverScale, rotation: 0, duration: 2.3, ease: 'expo.out' }, 0.55)
-      // 3) قطرات حبر متطايرة أثناء الانفجار
-      .to(drops, { scale: 1, opacity: 1, duration: 0.65, stagger: 0.04, ease: 'power2.out' }, 0.95)
-      // 4) تكثف الحبر عند المركز وانكشاف اللوغو الحقيقي بشبكته الخلوية من تحته
-      .to('#splatter-group', { scale: coverScale * 0.9, opacity: 0, duration: 1.2, ease: 'power3.in' }, 3.3)
-      .fromTo('#logo-stage', { scale: 0.6, opacity: 0 }, {
-        scale: 1, opacity: 1, duration: 1.15, ease: 'power3.out',
-        onStart: () => revealLogo(false),
-      }, 3.55)
-      // 5) تلاشي الشاشة البيضاء وكشف الموقع + إشعال ألوان العلامة
-      .to(screen, { opacity: 0, duration: 1.3, ease: 'power2.inOut' }, 4.8)
-      .add(() => igniteLogo(), 4.85);
+      // ---- SCENE 1 · biometric scan ----
+      .to('.hud-grid', { autoAlpha: 1, duration: 0.5, ease: 'power1.out' }, 0.1)
+      .to('.hud-corner', { autoAlpha: 1, duration: 0.4, stagger: 0.08, ease: 'power2.out' }, 0.25)
+      .to(eyeWrap, { autoAlpha: 1, scale: 1, duration: 0.5, ease: 'power3.out' }, 0.3)
+      .to('.eye-lid-top', { yPercent: -100, duration: 0.65, ease: 'power3.inOut' }, 0.5)
+      .to('.eye-lid-bottom', { yPercent: 100, duration: 0.65, ease: 'power3.inOut' }, 0.5)
+      .to('.iris', { scale: 1, duration: 0.45, ease: 'power2.out' }, 0.55)
+      .to('.cyber-glow', { autoAlpha: 1, duration: 0.7, ease: 'power2.out' }, 0.5)
+      .to('.eye-shade', { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 0.9)
+      .to('.iris-texture', { autoAlpha: 1, duration: 0.8, ease: 'power2.out' }, 1.0)
+      .to('.eye-hud', { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 1.4)
+      .to('.hud-label', { autoAlpha: 1, duration: 0.4, stagger: 0.2, ease: 'power2.out' }, 0.7)
+      .to('.hud-readout', { autoAlpha: 1, duration: 0.4, stagger: 0.15, ease: 'power2.out' }, 0.75)
+      .to('.hud-graph', { autoAlpha: 1, duration: 0.4 }, 0.85)
+      .to('.hud-graph .g-line', { strokeDashoffset: 0, duration: 0.8, ease: 'power1.inOut' }, 0.9)
+      .to(beam, { autoAlpha: 1, duration: 0.25 }, 0.95)
+      .to(beam, { top: '86%', duration: 1.0, ease: 'power1.inOut' }, 1.05)
+      .to(beam, { top: '10%', duration: 0.45, ease: 'power1.inOut' }, 2.05)
+      .to(beam, { top: '86%', duration: 0.6, ease: 'power1.inOut' }, 2.5)
+      .to(pctState, {
+        v: 100, duration: 1.7, ease: 'power1.inOut', snap: { v: 1 },
+        onUpdate: () => {
+          const v = Math.round(pctState.v);
+          if (pctEl) pctEl.textContent = String(v).padStart(3, '0');
+          if (fillEl) fillEl.style.width = v + '%';
+          if (gaugeProg) gaugeProg.style.strokeDashoffset = (301.6 * (1 - pctState.v / 100)).toFixed(1);
+        },
+      }, 1.2)
+      .to('.hud-progress', { autoAlpha: 1, duration: 0.4 }, 1.2)
+      .to('.hud-tick-row .tick', { autoAlpha: 1, duration: 0.3, stagger: 0.18, ease: 'power2.out' }, 1.5)
+      .to(reticle, { autoAlpha: 1, scale: 1, duration: 0.5, ease: 'back.out(2)' }, 1.75)
+      .to('.scene1-center', { x: 5, y: -3, duration: 0.07, repeat: 4, yoyo: true, ease: 'none' }, 2.4)
+      .add(confirmAccess, 2.55)
+      .to(reticle, { scale: 0.92, duration: 0.25, ease: 'power2.in' }, 2.6)
+      // ---- zoom through the pupil ----
+      .to('.hud-grid, .hud-corner, .hud-readout, .hud-label, .hud-graph, .hud-tick-row, .hud-progress, .eye-hud, .cyber-glow, .eye-shade, .iris-texture', { autoAlpha: 0, duration: 0.35 }, 2.7)
+      .to(eyeWrap, { scale: 10, autoAlpha: 0, duration: 0.7, ease: 'power4.in' }, 2.75)
+      // ---- SCENE 2 · data tunnel / warp ----
+      .to(scene1, { autoAlpha: 0, duration: 0.25 }, 3.3)
+      .to(scene2, { autoAlpha: 1, duration: 0.3 }, 3.35)
+      .to('.tunnel-halo', { autoAlpha: 1, scale: 1.6, duration: 0.8, ease: 'power2.out' }, 3.4)
+      .to('.t-ring', { scale: 2.6, autoAlpha: 1, duration: 0.85, stagger: 0.09, ease: 'power2.in' }, 3.45)
+      .to('#tunnel-rings', { rotation: 90, duration: 2.2, ease: 'none' }, 3.45)
+      .to('.streak', { scaleY: 1, autoAlpha: 0.8, duration: 0.85, stagger: 0.015, ease: 'power2.in' }, 3.5)
+      .to('.t-particle', { opacity: 0.9, duration: 0.15, stagger: 0.02 }, 3.5)
+      .to('.t-particle', {
+        x: (i, el) => Math.cos(parseFloat(el.style.getPropertyValue('--a')) * Math.PI / 180) * parseFloat(el.style.getPropertyValue('--d')),
+        y: (i, el) => Math.sin(parseFloat(el.style.getPropertyValue('--a')) * Math.PI / 180) * parseFloat(el.style.getPropertyValue('--d')),
+        opacity: 0, duration: 1.35, stagger: 0.02, ease: 'power1.out',
+      }, 3.65)
+      .to('.tunnel-core', { autoAlpha: 1, duration: 0.2 }, 4.0)
+      .to('.tunnel-core', { scale: 26, duration: 0.65, ease: 'power2.in' }, 4.2)
+      // ---- SCENE 3 · logo placeholder ----
+      .to(scene2, { autoAlpha: 0, duration: 0.25 }, 4.7)
+      .to(scene3, { autoAlpha: 1, duration: 0.3 }, 4.75)
+      .to('#circuit-svg', { autoAlpha: 1, duration: 0.7, ease: 'power2.out' }, 4.8)
+      .to('.circuit-node', { scale: 1.7, opacity: 0.7, duration: 0.5, stagger: 0.05, yoyo: true, repeat: 2, ease: 'sine.inOut' }, 5.0)
+      .to('.scene3-title', { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 5.0)
+      .to('#logo-stage', { autoAlpha: 1, duration: 0.4 }, 5.1)
+      .to('.logo-slot-ring .ring-solid', { strokeDashoffset: 0, duration: 0.8, ease: 'power2.inOut' }, 5.15)
+      .to('.logo-slot-fill', { clipPath: 'circle(50% at 50% 50%)', duration: 0.7, ease: 'power3.out' }, 5.25)
+      .to('.logo-slot-label', { autoAlpha: 1, duration: 0.5 }, 5.6)
+      .call(setupTilt, null, 5.7)
+      .call(reparentLogo, null, 6.02)
+      .call(finalizeLogo, null, 6.08)
+      // ---- outro ----
+      .to(intro, { autoAlpha: 0, duration: 0.6, ease: 'power2.inOut' }, 6.1);
 
-    heroReveal(introTl, 5.0);
+    heroReveal(introTl, 6.2);
   } else {
-    // وضع تقليل الحركة: تلاشٍ سريع للشاشة البيضاء + لوغو حقيقي ثابت
-    if (overlay) introTl.to(screen, { opacity: 0, duration: 0.5, ease: 'power1.inOut' }, 0);
-    if (overlay) introTl.add(() => revealLogo(true), 0.05);
-    heroReveal(introTl, 0.2);
+    // وضع تقليل الحركة: تلاشٍ سريع للمقدمة + شعار ثابت في مركز الهيرو
+    gsap.set('.logo-slot-fill', { clipPath: 'circle(50% at 50% 50%)' });
+    gsap.set('.logo-slot-ring .ring-solid', { strokeDashoffset: 0 });
+    gsap.set('#hero h1 span, #hero p, #hero .cta-btn, #hero a[href="#contact"]', { y: 0, opacity: 1, rotateX: 0 });
+    gsap.set('.floater', { scale: 1, opacity: 1, rotateX: 0, rotateY: 0 });
+    introTl.call(reparentLogo, null, 0)
+            .call(finalizeLogo, null, 0.05);
+    if (intro) introTl.to(intro, { autoAlpha: 0, duration: 0.4, ease: 'power1.inOut' }, 0.1);
   }
 });
 /* ===================== SERVICE DATA ===================== */
@@ -389,193 +504,4 @@ if(reduceMotionQuery.matches){
   }, { threshold: 0.2, rootMargin: '0px 0px -10% 0px' });
 
   revealElements.forEach((el) => revealObserver.observe(el));
-}
-
-/* ===================== AURORA LOGO CELLS (يتولد من تكثف الحبر) ===================== */
-let auroraCells = [];
-
-// ألوان العلامة: سماوي ← بنفسجي ← كوزميك
-function brandColor(t) {
-  const c1 = [76, 251, 234], c2 = [157, 78, 221], c3 = [108, 43, 217];
-  let a, b, u;
-  if (t < 0.5) { a = c1; b = c2; u = t * 2; }
-  else { a = c2; b = c3; u = (t - 0.5) * 2; }
-  return 'rgb(' + Math.round(a[0] + (b[0] - a[0]) * u) + ',' +
-    Math.round(a[1] + (b[1] - a[1]) * u) + ',' +
-    Math.round(a[2] + (b[2] - a[2]) * u) + ')';
-}
-
-// بناء مرحلة الشعار: اللوغو الحقيقي ظاهر بوضوح + شبكة سطحية من الخلايا تشوّه مع المؤشر
-function assembleLogoStage(immediateColor) {
-  const stage = document.getElementById('logo-stage');
-  const svg = stage ? stage.querySelector('#logo-svg') : null;
-  const group = stage ? stage.querySelector('#logo3d') : null;
-  if (!stage || !svg || !group) return;
-  if (group.childElementCount > 0) return;
-
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const VBW = 1000, VBH = 200;
-  const baseR = 2.2;
-  const NS = 'http://www.w3.org/2000/svg';
-
-  // 1) اللوغو الحقيقي: صورة واضحة تماماً في المركز (مواد/نص الصورة تظهر كاملة)
-  const imageEl = document.createElementNS(NS, 'image');
-  imageEl.setAttribute('href', 'imgs/logo-2k-without-background.png');
-  imageEl.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', 'imgs/logo-2k-without-background.png');
-  imageEl.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-  if (auroraLogoImage.complete && auroraLogoImage.naturalWidth > 0) {
-    const iw = auroraLogoImage.naturalWidth, ih = auroraLogoImage.naturalHeight;
-    const s = Math.min(VBW / iw, VBH / ih);
-    imageEl.setAttribute('x', ((VBW - iw * s) / 2).toFixed(1));
-    imageEl.setAttribute('y', ((VBH - ih * s) / 2).toFixed(1));
-    imageEl.setAttribute('width', (iw * s).toFixed(1));
-    imageEl.setAttribute('height', (ih * s).toFixed(1));
-  } else {
-    imageEl.setAttribute('x', '0');
-    imageEl.setAttribute('y', '0');
-    imageEl.setAttribute('width', VBW);
-    imageEl.setAttribute('height', VBH);
-  }
-  group.appendChild(imageEl);
-
-  // 2) الشبكة السطحية: عينات من بكسلات اللوغو نفسه (خلايا صغيرة تشوّه وتتباعد مع المؤشر)
-  const cv = document.createElement('canvas');
-  cv.width = VBW; cv.height = VBH;
-  const ctx = cv.getContext('2d');
-  if (auroraLogoImage.complete && auroraLogoImage.naturalWidth > 0) {
-    const iw = auroraLogoImage.naturalWidth, ih = auroraLogoImage.naturalHeight;
-    const s = Math.min(VBW / iw, VBH / ih);
-    ctx.drawImage(auroraLogoImage, (VBW - iw * s) / 2, (VBH - ih * s) / 2, iw * s, ih * s);
-  } else {
-    ctx.font = '700 150px "Bricolage Grotesque", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText('AURORA', VBW / 2, VBH / 2);
-  }
-
-  const img = ctx.getImageData(0, 0, VBW, VBH).data;
-  const step = 7;
-  const cells = [];
-  const frag = document.createDocumentFragment();
-
-  for (let y = 0; y < VBH; y += step) {
-    for (let x = 0; x < VBW; x += step) {
-      if (img[(y * VBW + x) * 4 + 3] > 128) {
-        const c = document.createElementNS(NS, 'circle');
-        c.setAttribute('r', baseR);
-        c.setAttribute('fill', immediateColor ? brandColor(x / VBW) : '#0b0b0b');
-        c.setAttribute('opacity', '0.6');
-        c.setAttribute('cx', x);
-        c.setAttribute('cy', y);
-        frag.appendChild(c);
-        cells.push({ el: c, ax: x, ay: y, x: x, y: y, s: 1 });
-      }
-    }
-  }
-  group.appendChild(frag);
-  auroraCells = cells;
-
-  // إظهار الشعار في وضع تقليل الحركة
-  if (immediateColor) {
-    gsap.to(stage, { opacity: 0.6, duration: 0.7, ease: 'power2.out' });
-  }
-
-  if (!reduceMotion) {
-    // دوران ثلاثي الأبعاد ناعم ومستمر
-    gsap.to(group, {
-      rotationY: -17, rotationZ: 3, transformPerspective: 1200,
-      duration: 5.5, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: 0.3,
-    });
-    // تشوّه الخلايا وتفاعلها مع المؤشر ثم عودتها لبنيتها الأصلية
-    setupDistortion(stage, svg, cells, VBW, VBH, baseR);
-  }
-}
-
-// إشعال ألوان العلامة التجارية فوق خلايا الشعار (بعد كشف الخلفية الداكنة)
-function igniteLogo() {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  for (let i = 0; i < auroraCells.length; i++) {
-    const cell = auroraCells[i];
-    gsap.to(cell.el, {
-      attr: { fill: brandColor(cell.ax / 1000) },
-      duration: 1.1, ease: 'power1.inOut', delay: i * 0.0015,
-    });
-  }
-}
-
-// تشوّه الخلايا مع حركة المؤشر (دفع + منحنى حلزوني) ثم استرخاء ناعم نحو البنية الأصلية
-function setupDistortion(stage, svg, cells, VBW, VBH, baseR) {
-  const pointer = { x: null, y: null };
-  let inView = true;
-  let rafId = null;
-  let idle = 0;
-
-  const wake = () => {
-    idle = 0;
-    if (rafId === null) rafId = requestAnimationFrame(tick);
-  };
-
-  window.addEventListener('pointermove', (e) => {
-    // تحويل إحداثيات المؤشر إلى إحداثيات الـ viewBox
-    const rect = svg.getBoundingClientRect();
-    const scale = Math.min(rect.width / VBW, rect.height / VBH);
-    const ox = rect.left + (rect.width - VBW * scale) / 2;
-    const oy = rect.top + (rect.height - VBH * scale) / 2;
-    pointer.x = (e.clientX - ox) / scale;
-    pointer.y = (e.clientY - oy) / scale;
-    if (inView) wake();
-  }, { passive: true });
-
-  document.addEventListener('pointerleave', () => {
-    pointer.x = null;
-    pointer.y = null;
-    if (inView) wake();
-  });
-
-  // إيقاف العمل عند خروج الهيرو من الشاشة
-  new IntersectionObserver(([entry]) => {
-    inView = entry.isIntersecting;
-    if (inView) wake();
-  }, { threshold: 0 }).observe(stage);
-
-  const R = 150, MAX = 30, ANG = 0.55;
-  const cosA = Math.cos(ANG), sinA = Math.sin(ANG);
-  const K = 0.16;
-
-  function tick() {
-    let wrote = false;
-    if (inView && pointer.x !== null && pointer.y !== null) {
-      for (let i = 0; i < cells.length; i++) {
-        const cell = cells[i];
-        let tx = cell.ax, ty = cell.ay, ts = 1;
-        const rx = cell.ax - pointer.x, ry = cell.ay - pointer.y;
-        const d2 = rx * rx + ry * ry;
-        if (d2 < R * R && d2 > 0.001) {
-          // قوة التشتت تتناقص مع المسافة + منحنى حلزوني خفيف
-          const d = Math.sqrt(d2);
-          const f = 1 - d / R;
-          const s = f * f * MAX;
-          const ex = rx / d, ey = ry / d;
-          tx += (ex * cosA - ey * sinA) * s;
-          ty += (ex * sinA + ey * cosA) * s;
-          ts = 1 + f * 0.55;
-        }
-        // استرخاء ناعم نحو الهدف ثم عودة إلى الشكل الأصلي
-        cell.x += (tx - cell.x) * K;
-        cell.y += (ty - cell.y) * K;
-        cell.s += (ts - cell.s) * K;
-        if (Math.abs(cell.x - tx) > 0.04 || Math.abs(cell.y - ty) > 0.04 || Math.abs(cell.s - ts) > 0.008) {
-          const el = cell.el;
-          el.setAttribute('cx', cell.x.toFixed(2));
-          el.setAttribute('cy', cell.y.toFixed(2));
-          el.setAttribute('r', (baseR * cell.s).toFixed(2));
-          wrote = true;
-        }
-      }
-    }
-    idle = wrote ? 0 : idle + 1;
-    if (idle > 60) { rafId = null; return; }
-    rafId = requestAnimationFrame(tick);
-  }
 }

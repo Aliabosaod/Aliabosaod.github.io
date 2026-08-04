@@ -19,9 +19,10 @@
         colors: {
           obsidian: '#050505',
           panel: '#0b0b0e',
-          cyan: '#4CFBEA',
-          violet: '#9D4EDD',
-          cosmic: '#6C2BD9',
+          cyan: '#00f3ff',
+          violet: '#ff0055',
+          cosmic: '#7a2bff',
+          emerald: '#00ffaa',
           bone: '#F3F1EC',
           dim: '#8A8A93',
         },
@@ -46,37 +47,132 @@
 </head>
 
 <body class="bg-obsidian grain overflow-x-hidden">
-<!-- ============ CRT INK SPLATTER INTRO ============ -->
-<div id="crt-overlay" aria-hidden="true">
-  <div id="crt-frame">
-    <!-- شاشة CRT بيضاء بحواف دائرية -->
-    <div id="crt-screen">
-      <svg id="ink-svg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
-        <defs>
-          <radialGradient id="thermalGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#ff7a2e"/>
-            <stop offset="50%" stop-color="#e8390d"/>
-            <stop offset="100%" stop-color="#a3120f"/>
-          </radialGradient>
-          <filter id="inkBlur" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="16"/>
-          </filter>
-        </defs>
-        <g id="splatter-group">
-          <path id="ink-glow" fill="url(#thermalGlow)" filter="url(#inkBlur)"/>
-          <g id="ink-dots"></g>
-          <path id="ink-body" fill="#0b0b0b"/>
-          <g id="ink-drops"></g>
-        </g>
+<!-- ============ CYBERNETIC INTRO (biometric → tunnel → logo) ============ -->
+<div id="cyber-intro" aria-hidden="true">
+
+  <!-- SCENE 1 · Biometric eye scan -->
+  <div class="cyber-scene" id="scene-scan">
+    <div class="cyber-bg"></div>
+    <div class="hud-grid"></div>
+    <div class="hud-corner c-tl"></div>
+    <div class="hud-corner c-tr"></div>
+    <div class="hud-corner c-bl"></div>
+    <div class="hud-corner c-br"></div>
+
+    <div class="hud-readout ro-1">SYS.AURORA // SEC-CLEARANCE 7</div>
+    <div class="hud-readout ro-2">GRID 04 · NODE 117</div>
+
+    <div class="hud-graph">
+      <svg viewBox="0 0 220 70" preserveAspectRatio="none">
+        <path class="g-axis" d="M0 68 H220"/>
+        <path class="g-axis" d="M0 68 V0"/>
+        <polyline class="g-line" points="0,60 22,54 44,58 66,44 88,50 110,36 132,42 154,24 176,32 198,16 220,10"/>
       </svg>
     </div>
-    <!-- AURORA logo cells (تتولد من تكثف الحبر) -->
-    <div id="logo-stage" aria-hidden="true">
-      <svg id="logo-svg" viewBox="0 0 1000 200" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 26px rgba(76,251,234,0.18))">
-        <g id="logo3d"></g>
-      </svg>
+
+    <div class="scene1-center">
+      <div class="cyber-glow"></div>
+      <div class="eye-hud" id="eye-hud" aria-hidden="true">
+        <svg class="eh-rings" viewBox="0 0 100 100">
+          <defs>
+            <linearGradient id="hudGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#00f3ff"/><stop offset="100%" stop-color="#ff0055"/>
+            </linearGradient>
+          </defs>
+          <circle class="eh-1" cx="50" cy="50" r="48"/>
+          <circle class="eh-2" cx="50" cy="50" r="42"/>
+          <circle class="eh-3" cx="50" cy="50" r="36"/>
+          <path class="eh-sweep" d="M50 50 m0 -48 a48 48 0 1 1 -0.01 0"/>
+        </svg>
+        <svg id="scan-gauge" viewBox="0 0 100 100">
+          <circle class="gg-track" cx="50" cy="50" r="48"/>
+          <circle class="gg-prog" id="scan-gauge-prog" cx="50" cy="50" r="48"/>
+        </svg>
+      </div>
+      <div class="eye-wrap" id="eye-wrap">
+        <div class="eye">
+          <div class="eye-lid eye-lid-top"></div>
+          <div class="eye-lid eye-lid-bottom"></div>
+          <div class="iris">
+            <div class="iris-texture"></div>
+            <div class="pupil"></div>
+          </div>
+          <div class="eye-reflect"></div>
+          <div class="eye-reflect-2"></div>
+          <div class="eye-reflect-3"></div>
+          <div class="eye-shade"></div>
+          <div class="scan-beam"></div>
+        </div>
+        <div class="reticle">
+          <span class="ring r1"></span>
+          <span class="ring r2"></span>
+          <span class="ring r3"></span>
+          <span class="cross-h"></span>
+          <span class="cross-v"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hud-label lbl-top">BIOMETRIC VERIFICATION // SUBJECT-072</div>
+    <div class="hud-label lbl-btm">IRIS IDENTIFICATION PROTOCOL v2.1</div>
+
+    <div class="hud-progress">
+      <div class="hud-progress-label"><span>RETINA MATCH</span><span class="hud-progress-pct"><b id="scan-progress-pct">000</b><em>%</em></span></div>
+      <div class="hud-progress-bar"><span id="scan-progress-fill"></span></div>
+    </div>
+
+    <div class="hud-tick-row">
+      <span class="tick is-ok">IRIS OK</span>
+      <span class="tick is-ok">PUPIL OK</span>
+      <span class="tick" id="tick-verify">VERIFYING...</span>
     </div>
   </div>
+
+  <!-- SCENE 2 · Data tunnel / warp -->
+  <div class="cyber-scene" id="scene-tunnel">
+    <div class="tunnel-halo"></div>
+    <div id="tunnel-streaks"></div>
+    <div id="tunnel-rings">
+      <span class="t-ring"></span>
+      <span class="t-ring"></span>
+      <span class="t-ring"></span>
+      <span class="t-ring"></span>
+    </div>
+    <div class="tunnel-core"></div>
+  </div>
+
+  <!-- SCENE 3 · Logo placeholder reveal -->
+  <div class="cyber-scene" id="scene-logo">
+    <svg id="circuit-svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+      <g id="circuit-traces" fill="none"></g>
+      <g id="circuit-nodes"></g>
+    </svg>
+    <div class="scene3-title">AURORA<span>MEDIA SYSTEMS</span></div>
+    <div id="logo-stage">
+      <div id="logo-tilt">
+        <div id="logo-spin">
+          <div class="logo-slot">
+            <svg class="logo-slot-ring" viewBox="0 0 100 100">
+              <defs>
+                <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#00f3ff"/><stop offset="100%" stop-color="#ff0055"/>
+                </linearGradient>
+              </defs>
+              <circle class="ring-solid" cx="50" cy="50" r="48"/>
+              <circle class="ring-dashed" cx="50" cy="50" r="41"/>
+              <circle class="ring-outer" cx="50" cy="50" r="33"/>
+            </svg>
+            <div class="logo-slot-fill">
+              <img id="brand-logo" src="./imgs/logo-2k-without-background.png" alt="Aurora Media logo">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="logo-fx"></div>
+    </div>
+    <div class="logo-slot-label">LOGO SLOT // INSERT MARK // READY</div>
+  </div>
+
 </div>
 <!-- ============ NAV ============ -->
 <header class="fixed top-0 left-0 w-full z-50 px-6 md:px-10 py-5 flex items-center justify-between">
@@ -88,7 +184,7 @@
     <a href="#video" class="nav-link">Motion</a>
     <a href="#contact" class="nav-link">Contact</a>
   </nav>
-  <a href="#contact" class="hidden md:inline-block font-mono text-xs uppercase tracking-widest border border-bone/25 px-4 py-2 rounded-full hover:border-cyan/60 hover:text-cyan transition-colors">
+  <a href="#contact" class="neon-ghost hidden md:inline-block font-mono text-xs uppercase tracking-widest border border-bone/25 px-4 py-2 rounded-full hover:border-cyan/60 hover:text-cyan transition-colors">
     Start a project
   </a>
 </header>
@@ -107,23 +203,23 @@
     <div class="floater" data-depth="0.6" style="top:14%; left:8%; width:110px;">
       <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs><linearGradient id="lensG" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#4CFBEA"/><stop offset="100%" stop-color="#9D4EDD"/>
+          <stop offset="0%" stop-color="#00f3ff"/><stop offset="100%" stop-color="#ff0055"/>
         </linearGradient></defs>
         <circle cx="60" cy="60" r="52" stroke="url(#lensG)" stroke-width="1.4" opacity="0.85"/>
         <circle cx="60" cy="60" r="38" stroke="url(#lensG)" stroke-width="1" opacity="0.6"/>
         <circle cx="60" cy="60" r="22" stroke="url(#lensG)" stroke-width="1.2" opacity="0.9"/>
         <circle cx="60" cy="60" r="6" fill="url(#lensG)" opacity="0.7"/>
-        <path d="M60 8 L60 22 M60 98 L60 112 M8 60 L22 60 M98 60 L112 60" stroke="#4CFBEA" stroke-width="0.8" opacity="0.4"/>
+        <path d="M60 8 L60 22 M60 98 L60 112 M8 60 L22 60 M98 60 L112 60" stroke="#00f3ff" stroke-width="0.8" opacity="0.4"/>
       </svg>
     </div>
 
     <!-- Color palette -->
     <div class="floater" data-depth="0.35" style="top:58%; left:14%; width:120px;">
       <svg viewBox="0 0 140 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M70 4C33 4 4 30 4 60c0 18 14 26 28 26 6 0 9-4 9-9 0-4-3-6-3-11 0-8 7-13 16-13h20c17 0 30-12 30-27C104 15 90 4 70 4z" stroke="#9D4EDD" stroke-width="1.3" opacity="0.85"/>
-        <circle cx="34" cy="34" r="8" fill="#4CFBEA" opacity="0.85"/>
-        <circle cx="66" cy="20" r="8" fill="#9D4EDD" opacity="0.85"/>
-        <circle cx="96" cy="34" r="8" fill="#6C2BD9" opacity="0.85"/>
+        <path d="M70 4C33 4 4 30 4 60c0 18 14 26 28 26 6 0 9-4 9-9 0-4-3-6-3-11 0-8 7-13 16-13h20c17 0 30-12 30-27C104 15 90 4 70 4z" stroke="#ff0055" stroke-width="1.3" opacity="0.85"/>
+        <circle cx="34" cy="34" r="8" fill="#00f3ff" opacity="0.85"/>
+        <circle cx="66" cy="20" r="8" fill="#ff0055" opacity="0.85"/>
+        <circle cx="96" cy="34" r="8" fill="#7a2bff" opacity="0.85"/>
         <circle cx="24" cy="62" r="8" fill="#F3F1EC" opacity="0.5"/>
       </svg>
     </div>
@@ -131,26 +227,26 @@
     <!-- Typography glyph -->
     <div class="floater" data-depth="0.5" style="top:10%; right:10%; width:150px;">
       <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
-        <text x="0" y="110" font-family="'Bricolage Grotesque', sans-serif" font-size="130" font-weight="700" fill="none" stroke="#4CFBEA" stroke-width="1" opacity="0.7">Aa</text>
+        <text x="0" y="110" font-family="'Bricolage Grotesque', sans-serif" font-size="130" font-weight="700" fill="none" stroke="#00f3ff" stroke-width="1" opacity="0.7">Aa</text>
       </svg>
     </div>
 
     <!-- UI wireframe block -->
     <div class="floater" data-depth="0.45" style="top:66%; right:16%; width:150px;">
       <svg viewBox="0 0 160 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="2" y="2" width="156" height="106" rx="8" stroke="#9D4EDD" stroke-width="1" opacity="0.7"/>
-        <rect x="14" y="16" width="40" height="8" rx="2" fill="#4CFBEA" opacity="0.6"/>
+        <rect x="2" y="2" width="156" height="106" rx="8" stroke="#ff0055" stroke-width="1" opacity="0.7"/>
+        <rect x="14" y="16" width="40" height="8" rx="2" fill="#00f3ff" opacity="0.6"/>
         <rect x="14" y="34" width="132" height="1" fill="#F3F1EC" opacity="0.25"/>
-        <rect x="14" y="48" width="60" height="46" rx="4" stroke="#4CFBEA" stroke-width="0.8" opacity="0.5"/>
-        <rect x="84" y="48" width="62" height="20" rx="4" stroke="#6C2BD9" stroke-width="0.8" opacity="0.6"/>
-        <rect x="84" y="74" width="62" height="20" rx="4" stroke="#6C2BD9" stroke-width="0.8" opacity="0.6"/>
+        <rect x="14" y="48" width="60" height="46" rx="4" stroke="#00f3ff" stroke-width="0.8" opacity="0.5"/>
+        <rect x="84" y="48" width="62" height="20" rx="4" stroke="#7a2bff" stroke-width="0.8" opacity="0.6"/>
+        <rect x="84" y="74" width="62" height="20" rx="4" stroke="#7a2bff" stroke-width="0.8" opacity="0.6"/>
       </svg>
     </div>
 
     <!-- Cursor arrow -->
     <div class="floater" data-depth="0.7" style="top:36%; right:34%; width:46px;">
       <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M6 4 L34 20 L20 22 L26 34 L20 36 L14 24 L6 30 Z" fill="#4CFBEA" opacity="0.9"/>
+        <path d="M6 4 L34 20 L20 22 L26 34 L20 36 L14 24 L6 30 Z" fill="#00f3ff" opacity="0.9"/>
       </svg>
     </div>
 
@@ -158,15 +254,16 @@
     <div class="floater" data-depth="0.3" style="bottom:8%; right:8%; width:170px;">
       <svg viewBox="0 0 180 100" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs><linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#9D4EDD" stop-opacity="0.5"/><stop offset="100%" stop-color="#9D4EDD" stop-opacity="0"/>
+          <stop offset="0%" stop-color="#ff0055" stop-opacity="0.5"/><stop offset="100%" stop-color="#ff0055" stop-opacity="0"/>
         </linearGradient></defs>
-        <polyline points="4,80 34,64 60,70 90,40 120,48 150,14 176,20" fill="none" stroke="#9D4EDD" stroke-width="2"/>
+        <polyline points="4,80 34,64 60,70 90,40 120,48 150,14 176,20" fill="none" stroke="#ff0055" stroke-width="2"/>
         <polygon points="4,80 34,64 60,70 90,40 120,48 150,14 176,20 176,96 4,96" fill="url(#chartFill)"/>
       </svg>
     </div>
   </div>
 
   <div class="relative z-10 px-6 md:px-10">
+    <div id="hero-logo-slot"></div>
     <p class="font-mono text-xs md:text-sm tracking-[0.3em] text-cyan/80 uppercase mb-6">
       Creative Studio — Est. Signals of Motion
     </p>
@@ -183,7 +280,7 @@
       <a href="#services" class="cta-btn font-mono text-xs uppercase tracking-widest px-6 py-3.5 rounded-full font-medium">
         View the work
       </a>
-      <a href="#contact" class="font-mono text-xs uppercase tracking-widest text-bone/70 hover:text-cyan transition-colors">
+      <a href="#contact" class="neon-ghost font-mono text-xs uppercase tracking-widest text-bone/70 hover:text-cyan transition-colors">
         Book a call →
       </a>
     </div>
@@ -195,7 +292,7 @@
 </section>
 
 <!-- ============ MARQUEE ============ -->
-<section class="relative border-y border-bone/10 py-5 overflow-hidden">
+<section id="marquee-sec" class="neon-divider relative border-y border-bone/10 py-5 overflow-hidden">
   <div id="marquee" class="flex whitespace-nowrap font-display text-3xl md:text-5xl gap-10 text-bone/15">
     <span>Branding — Digital Design — Paid Ads — Packaging — Strategy — Video Editing — </span>
     <span>Branding — Digital Design — Paid Ads — Packaging — Strategy — Video Editing — </span>
@@ -219,24 +316,24 @@
     <!-- Film strip -->
     <div class="floater" data-depth="0.4" style="top:12%; left:6%; width:220px;">
       <svg viewBox="0 0 260 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="2" y="2" width="256" height="86" rx="6" stroke="#4CFBEA" stroke-width="1" opacity="0.7"/>
-        <g fill="#050505" stroke="#4CFBEA" stroke-width="0.7" opacity="0.7">
+        <rect x="2" y="2" width="256" height="86" rx="6" stroke="#00f3ff" stroke-width="1" opacity="0.7"/>
+        <g fill="#050505" stroke="#00f3ff" stroke-width="0.7" opacity="0.7">
           <rect x="12" y="10" width="10" height="10" rx="2"/><rect x="12" y="70" width="10" height="10" rx="2"/>
           <rect x="12" y="40" width="10" height="10" rx="2"/>
           <rect x="238" y="10" width="10" height="10" rx="2"/><rect x="238" y="70" width="10" height="10" rx="2"/>
           <rect x="238" y="40" width="10" height="10" rx="2"/>
         </g>
-        <rect x="34" y="14" width="60" height="62" rx="3" stroke="#9D4EDD" stroke-width="0.8" opacity="0.7"/>
-        <rect x="100" y="14" width="60" height="62" rx="3" stroke="#9D4EDD" stroke-width="0.8" opacity="0.5"/>
-        <rect x="166" y="14" width="60" height="62" rx="3" stroke="#9D4EDD" stroke-width="0.8" opacity="0.7"/>
+        <rect x="34" y="14" width="60" height="62" rx="3" stroke="#ff0055" stroke-width="0.8" opacity="0.7"/>
+        <rect x="100" y="14" width="60" height="62" rx="3" stroke="#ff0055" stroke-width="0.8" opacity="0.5"/>
+        <rect x="166" y="14" width="60" height="62" rx="3" stroke="#ff0055" stroke-width="0.8" opacity="0.7"/>
       </svg>
     </div>
 
     <!-- Play button -->
     <div class="floater" data-depth="0.65" style="top:52%; right:12%; width:110px;">
       <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50" cy="50" r="46" stroke="#9D4EDD" stroke-width="1.3" opacity="0.85"/>
-        <path d="M42 34 L70 50 L42 66 Z" fill="#4CFBEA" opacity="0.9"/>
+        <circle cx="50" cy="50" r="46" stroke="#ff0055" stroke-width="1.3" opacity="0.85"/>
+        <path d="M42 34 L70 50 L42 66 Z" fill="#00f3ff" opacity="0.9"/>
       </svg>
     </div>
 
@@ -244,7 +341,7 @@
     <div class="floater" data-depth="0.3" style="bottom:10%; left:16%; width:220px;">
       <svg viewBox="0 0 240 40" fill="none" xmlns="http://www.w3.org/2000/svg">
         <line x1="0" y1="20" x2="240" y2="20" stroke="#F3F1EC" stroke-opacity="0.2"/>
-        <g fill="#6C2BD9" opacity="0.85">
+        <g fill="#7a2bff" opacity="0.85">
           <rect x="14" y="14" width="12" height="12" transform="rotate(45 20 20)"/>
           <rect x="74" y="14" width="12" height="12" transform="rotate(45 80 20)"/>
           <rect x="134" y="14" width="12" height="12" transform="rotate(45 140 20)"/>
