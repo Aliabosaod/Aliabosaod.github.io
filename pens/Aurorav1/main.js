@@ -1,4 +1,4 @@
-/* ===================== CYBERNETIC INTRO (biometric → warp → logo) ===================== */
+/* ===================== CYBERNETIC INTRO (combined fusion → particle burst → permanent centered logo) ===================== */
 window.addEventListener('load', () => {
   // إيقاف السكرول الناعم مؤقتاً أثناء المقدمة
   if (typeof lenis !== 'undefined') lenis.stop();
@@ -97,67 +97,55 @@ window.addEventListener('load', () => {
     gsap.set(stage, { position: 'absolute', left: '50%', top: '50%', xPercent: -50, yPercent: -50, zIndex: 3, scale: 1, opacity: 1 });
   };
 
-  // بناء مشهد الـ warp لـ scene 2 (خطوط سرعة + جسيمات)
-  const buildWarp = () => {
-    const streaks = document.getElementById('warp-streaks');
-    const particles = document.getElementById('warp-particles');
-    if (!streaks || !particles) return;
-    const sf = document.createDocumentFragment();
-    for (let i = 0; i < 26; i++) {
-      const s = document.createElement('span');
-      s.className = 'streak';
-      s.style.setProperty('--a', (i / 26) * 360 + 'deg');
-      s.style.setProperty('--c', i % 2 ? '#ff0055' : '#00f3ff');
-      sf.appendChild(s);
-    }
-    streaks.appendChild(sf);
-    const pf = document.createDocumentFragment();
-    for (let i = 0; i < 22; i++) {
-      const p = document.createElement('span');
-      p.className = 't-particle';
-      const a = (i / 22) * 360 + (Math.random() - 0.5) * 30;
-      const d = window.innerHeight * (0.5 + Math.random() * 0.55);
-      p.style.setProperty('--a', a + 'deg');
-      p.style.setProperty('--d', d.toFixed(0) + 'px');
-      p.style.setProperty('--c', i % 2 ? '#ff0055' : '#00f3ff');
-      pf.appendChild(p);
-    }
-    particles.appendChild(pf);
-  };
-
-  // دوران ثلاثي الأبعاد للكرتين
+  // دوران ثلاثي الأبعاد للكرتين + نبض توهج مستمر
   const startSphereSpin = () => {
     gsap.set(['#sphere-pc', '#sphere-mesh'], { transformPerspective: 900 });
-    gsap.to('#sphere-pc', { rotationY: 360, duration: 11, repeat: -1, ease: 'none' });
-    gsap.to('#sphere-mesh', { rotationY: -360, duration: 8, repeat: -1, ease: 'none' });
-    gsap.to('#sphere-layer', { rotationZ: 9, yoyo: true, repeat: -1, duration: 3, ease: 'sine.inOut' });
+    gsap.to('#sphere-pc', { rotationY: 360, duration: 12, repeat: -1, ease: 'none' });
+    gsap.to('#sphere-mesh', { rotationY: -360, duration: 9, repeat: -1, ease: 'none' });
+    gsap.to('#sphere-pc-orb', { y: -18, yoyo: true, repeat: -1, duration: 3.2, ease: 'sine.inOut' });
+    gsap.to('#sphere-mesh-orb', { y: 18, yoyo: true, repeat: -1, duration: 3.2, ease: 'sine.inOut' });
+    gsap.fromTo('#sphere-pc',
+      { filter: 'brightness(0.92) drop-shadow(0 0 14px rgba(0,243,255,0.4))' },
+      { filter: 'brightness(1.4) drop-shadow(0 0 36px rgba(0,243,255,0.9))',
+        duration: 1.9, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+    gsap.fromTo('#sphere-mesh',
+      { filter: 'brightness(0.92) drop-shadow(0 0 14px rgba(255,0,85,0.4))' },
+      { filter: 'brightness(1.4) drop-shadow(0 0 36px rgba(255,0,85,0.9))',
+        duration: 1.9, yoyo: true, repeat: -1, ease: 'sine.inOut' });
   };
 
-  // تحويل الكرتين إلى جسيمات متوهجة متباعدة
-  const disperseSpheres = () => {
-    const host = document.getElementById('warp-particles');
-    if (!host) return;
-    const N = 34;
-    for (let i = 0; i < N; i++) {
-      const p = document.createElement('span');
-      p.className = 't-particle';
-      const angle = (i / N) * Math.PI * 2 + (Math.random() - 0.5) * 0.6;
-      const dist = window.innerHeight * (0.42 + Math.random() * 0.5);
-      p.style.setProperty('--c', i % 2 ? '#ff0055' : '#00f3ff');
-      host.appendChild(p);
-      gsap.fromTo(p,
-        { xPercent: -50, yPercent: -50, x: 0, y: 0, scale: 1, autoAlpha: 0.95 },
-        { x: Math.cos(angle) * dist, y: Math.sin(angle) * dist, scale: 0.2, autoAlpha: 0,
-          duration: 0.9 + Math.random() * 0.5, delay: i * 0.012, ease: 'power2.out' });
+  // انحلال العين والكرتين إلى انفجار جسيمات متوهجة عند اكتمال المسح
+  const burstOut = () => {
+    const host = document.getElementById('burst-layer');
+    if (host) {
+      const N = 40;
+      const pf = document.createDocumentFragment();
+      for (let i = 0; i < N; i++) {
+        const p = document.createElement('span');
+        p.className = 't-particle';
+        const angle = (i / N) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+        const dist = window.innerHeight * (0.45 + Math.random() * 0.55);
+        p.style.setProperty('--c', i % 2 ? '#ff0055' : '#00f3ff');
+        pf.appendChild(p);
+        gsap.fromTo(p,
+          { xPercent: -50, yPercent: -50, x: 0, y: 0, scale: 1.4, autoAlpha: 1 },
+          { x: Math.cos(angle) * dist, y: Math.sin(angle) * dist, scale: 0.15, autoAlpha: 0,
+            duration: 1.1 + Math.random() * 0.6, delay: i * 0.014, ease: 'power3.out' });
+      }
+      host.appendChild(pf);
     }
+    // انحلال العين والكرتين نحو الخارج
+    gsap.to('.cyber-eye-wrap', { scale: 2.4, autoAlpha: 0, duration: 0.6, ease: 'power2.in' });
+    gsap.to('#sphere-pc-orb', { scale: 2.6, x: 46, y: -46, autoAlpha: 0, duration: 0.6, ease: 'power2.in' });
+    gsap.to('#sphere-mesh-orb', { scale: 2.6, x: -46, y: 46, autoAlpha: 0, duration: 0.6, ease: 'power2.in' });
+    gsap.to('.cyber-glow, .eye-hud', { autoAlpha: 0, duration: 0.4 });
+    // وميض مركزي ساطع
+    const flash = document.getElementById('burst-flash');
+    if (flash) gsap.fromTo(flash, { scale: 0.4, autoAlpha: 1 }, { scale: 2.6, autoAlpha: 0, duration: 0.7, ease: 'power2.out' });
   };
 
   if (intro && !reduceMotion) {
-    buildWarp();
-
-    const scene1 = document.getElementById('scene-scan');
-    const scene2 = document.getElementById('scene-warp');
-    const scene3 = document.getElementById('scene-logo');
+    const scene = document.getElementById('scene-fusion');
     const pctEl = document.getElementById('scan-progress-pct');
     const fillEl = document.getElementById('scan-progress-fill');
     const pctState = { v: 0 };
@@ -167,17 +155,13 @@ window.addEventListener('load', () => {
     const beam = document.querySelector('.scan-beam');
     const gaugeProg = document.getElementById('scan-gauge-prog');
 
-    gsap.set(scene1, { autoAlpha: 1 });
-    gsap.set(scene2, { autoAlpha: 0 });
-    gsap.set(scene3, { autoAlpha: 0 });
-    gsap.set(reticle, { scale: 1.7, autoAlpha: 0 });
-    gsap.set(eyeWrap, { scale: 1.22, autoAlpha: 0 });
-    gsap.set('.streak', { scaleY: 0.12, autoAlpha: 0 });
-    gsap.set('.t-particle', { autoAlpha: 0 });
-    gsap.set('#sphere-layer', { autoAlpha: 0, scale: 0.35, transformPerspective: 900 });
-    gsap.set('#warp-bg', { autoAlpha: 0 });
-    gsap.set('.tunnel-halo', { autoAlpha: 0, scale: 0.8 });
-    gsap.set('.tunnel-core', { autoAlpha: 0 });
+    gsap.set(scene, { autoAlpha: 1 });
+    gsap.set('#fusion-bg', { autoAlpha: 0 });
+    gsap.set('.fusion-glow', { autoAlpha: 0 });
+    gsap.set(reticle, { scale: 1.6, autoAlpha: 0 });
+    gsap.set(eyeWrap, { scale: 1.25, autoAlpha: 0 });
+    gsap.set('.sphere-orb', { scale: 0.4, autoAlpha: 0 });
+    gsap.set('#logo-stage', { scale: 0.3, autoAlpha: 0 });
     gsap.set('.cyber-glow, #eye-hud', { autoAlpha: 0 });
 
     const confirmAccess = () => {
@@ -189,20 +173,27 @@ window.addEventListener('load', () => {
     };
 
     introTl
-      // ---- STAGE 1 · biometric scan (cyber eye) ----
-      .to('.hud-grid', { autoAlpha: 1, duration: 0.5, ease: 'power1.out' }, 0.1)
-      .to('.hud-corner', { autoAlpha: 1, duration: 0.4, stagger: 0.08, ease: 'power2.out' }, 0.25)
-      .to(eyeWrap, { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'power3.out' }, 0.3)
-      .to('.cyber-glow', { autoAlpha: 1, duration: 0.7, ease: 'power2.out' }, 0.5)
+      // ---- COMBINED SCENE · wallpaper backdrop + HUD ----
+      .to('#fusion-bg', { autoAlpha: 1, duration: 0.9, ease: 'power2.out' }, 0.1)
+      .to('.fusion-glow', { autoAlpha: 1, duration: 0.9, ease: 'power2.out' }, 0.25)
+      .to('.hud-grid', { autoAlpha: 1, duration: 0.5, ease: 'power1.out' }, 0.15)
+      .to('.hud-corner', { autoAlpha: 1, duration: 0.4, stagger: 0.08, ease: 'power2.out' }, 0.3)
+      // ---- centerpiece · cyber eye + flanking 3D spheres ----
+      .to(eyeWrap, { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'power3.out' }, 0.35)
+      .to('.cyber-glow', { autoAlpha: 1, duration: 0.7, ease: 'power2.out' }, 0.55)
+      .to('.sphere-orb', { autoAlpha: 1, scale: 1, duration: 0.7, stagger: 0.18, ease: 'back.out(1.6)' }, 0.55)
+      .call(startSphereSpin, null, 0.6)
+      // ---- HUD overlay · labels, readouts, rings, graph, beam ----
       .to('.hud-label', { autoAlpha: 1, duration: 0.4, stagger: 0.2, ease: 'power2.out' }, 0.7)
       .to('.hud-readout', { autoAlpha: 1, duration: 0.4, stagger: 0.15, ease: 'power2.out' }, 0.75)
-      .to('#eye-hud', { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 0.8)
-      .to('.hud-graph', { autoAlpha: 1, duration: 0.4 }, 0.85)
-      .to('.hud-graph .g-line', { strokeDashoffset: 0, duration: 0.8, ease: 'power1.inOut' }, 0.9)
-      .to(beam, { autoAlpha: 1, duration: 0.25 }, 0.95)
-      .to(beam, { top: '86%', duration: 1.0, ease: 'power1.inOut' }, 1.05)
-      .to(beam, { top: '10%', duration: 0.45, ease: 'power1.inOut' }, 2.05)
-      .to(beam, { top: '86%', duration: 0.6, ease: 'power1.inOut' }, 2.5)
+      .to('#eye-hud', { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 0.85)
+      .to('.hud-graph', { autoAlpha: 1, duration: 0.4 }, 0.9)
+      .to('.hud-graph .g-line', { strokeDashoffset: 0, duration: 0.8, ease: 'power1.inOut' }, 0.95)
+      .to(beam, { autoAlpha: 1, duration: 0.25 }, 0.9)
+      .to(beam, { top: '86%', duration: 1.0, ease: 'power1.inOut' }, 1.0)
+      .to(beam, { top: '10%', duration: 0.45, ease: 'power1.inOut' }, 2.0)
+      .to(beam, { top: '86%', duration: 0.6, ease: 'power1.inOut' }, 2.45)
+      // ---- holographic scan counter 0 → 100 ----
       .to(pctState, {
         v: 100, duration: 1.7, ease: 'power1.inOut', snap: { v: 1 },
         onUpdate: () => {
@@ -214,47 +205,24 @@ window.addEventListener('load', () => {
       }, 1.2)
       .to('.hud-progress', { autoAlpha: 1, duration: 0.4 }, 1.2)
       .to('.hud-tick-row .tick', { autoAlpha: 1, duration: 0.3, stagger: 0.18, ease: 'power2.out' }, 1.5)
-      .to(reticle, { autoAlpha: 1, scale: 1, duration: 0.5, ease: 'back.out(2)' }, 1.75)
-      .to('.scene1-center', { x: 5, y: -3, duration: 0.07, repeat: 4, yoyo: true, ease: 'none' }, 2.5)
-      .add(confirmAccess, 2.65)
-      .to(reticle, { scale: 0.92, duration: 0.25, ease: 'power2.in' }, 2.7)
-      // ---- hyper-fast zoom through the pupil ----
-      .to('.hud-grid, .hud-corner, .hud-readout, .hud-label, .hud-graph, .hud-tick-row, .hud-progress, #eye-hud, .cyber-glow, .reticle', { autoAlpha: 0, duration: 0.3 }, 2.85)
-      .to(eyeWrap, { scale: 22, autoAlpha: 0, duration: 0.7, ease: 'power4.in' }, 2.9)
-      .to(scene1, { autoAlpha: 0, duration: 0.2 }, 3.45)
-      // ---- STAGE 2 · hyperspeed warp + 3D spheres ----
-      .to(scene2, { autoAlpha: 1, duration: 0.25 }, 3.45)
-      .to('#warp-bg', { autoAlpha: 1, duration: 0.7, ease: 'power2.out' }, 3.5)
-      .to('.tunnel-halo', { autoAlpha: 1, scale: 1.6, duration: 0.8, ease: 'power2.out' }, 3.55)
-      .to('.streak', { scaleY: 1, autoAlpha: 0.7, duration: 0.8, stagger: 0.015, ease: 'power2.in' }, 3.6)
-      .to('.t-particle', { opacity: 0.9, duration: 0.15, stagger: 0.02 }, 3.6)
-      .to('.t-particle', {
-        x: (i, el) => Math.cos(parseFloat(el.style.getPropertyValue('--a')) * Math.PI / 180) * parseFloat(el.style.getPropertyValue('--d')),
-        y: (i, el) => Math.sin(parseFloat(el.style.getPropertyValue('--a')) * Math.PI / 180) * parseFloat(el.style.getPropertyValue('--d')),
-        opacity: 0, duration: 1.2, stagger: 0.02, ease: 'power1.out',
-      }, 3.75)
-      .call(startSphereSpin, null, 4.0)
-      .to('#sphere-layer', { autoAlpha: 1, scale: 1, duration: 0.55, ease: 'back.out(1.4)' }, 4.0)
-      .to('.tunnel-core', { autoAlpha: 1, duration: 0.3 }, 4.05)
-      .to('#sphere-layer', { scale: 1.35, duration: 0.9, ease: 'sine.inOut' }, 4.4)
-      // ---- spheres disperse into glowing energy particles ----
-      .call(disperseSpheres, null, 4.9)
-      .to('#sphere-layer', { scale: 3.2, autoAlpha: 0, duration: 0.65, ease: 'power2.in' }, 4.95)
-      .to(scene2, { autoAlpha: 0, duration: 0.25 }, 5.45)
-      // ---- STAGE 3 · permanent centered logo reveal ----
-      .to(scene3, { autoAlpha: 1, duration: 0.3 }, 5.45)
-      .to('.scene3-title', { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 5.5)
-      .to('#logo-stage', { autoAlpha: 1, duration: 0.4 }, 5.55)
-      .to('.logo-slot-ring .ring-solid', { strokeDashoffset: 0, duration: 0.8, ease: 'power2.inOut' }, 5.6)
-      .to('.logo-slot-fill', { clipPath: 'circle(50% at 50% 50%)', duration: 0.7, ease: 'power3.out' }, 5.7)
-      .to('.logo-slot-label', { autoAlpha: 1, duration: 0.5 }, 6.05)
-      .call(setupTilt, null, 6.1)
-      .call(reparentLogo, null, 6.25)
-      .call(finalizeLogo, null, 6.3)
+      .to(reticle, { autoAlpha: 1, scale: 1, duration: 0.5, ease: 'back.out(2)' }, 1.7)
+      .to('.fusion-center', { x: 5, y: -3, duration: 0.07, repeat: 4, yoyo: true, ease: 'none' }, 2.5)
+      .add(confirmAccess, 2.6)
+      .to(reticle, { scale: 0.9, duration: 0.25, ease: 'power2.in' }, 2.65)
+      // ---- HUD out + morph: eye & spheres dissolve into a glowing particle burst ----
+      .to('.hud-grid, .hud-corner, .hud-readout, .hud-label, .hud-graph, .hud-tick-row, .hud-progress, #eye-hud, .cyber-glow, .reticle, .scan-beam', { autoAlpha: 0, duration: 0.3 }, 2.75)
+      .call(burstOut, null, 2.8)
+      // ---- permanent centered logo revealed from within the burst ----
+      .to('#logo-stage', { autoAlpha: 1, scale: 1, duration: 0.5, ease: 'back.out(1.5)' }, 2.9)
+      .to('.logo-slot-ring .ring-solid', { strokeDashoffset: 0, duration: 0.8, ease: 'power2.inOut' }, 3.0)
+      .to('.logo-slot-fill', { clipPath: 'circle(50% at 50% 50%)', duration: 0.7, ease: 'power3.out' }, 3.05)
+      .call(setupTilt, null, 3.4)
+      .call(reparentLogo, null, 3.5)
+      .call(finalizeLogo, null, 3.55)
       // ---- outro ----
-      .to(intro, { autoAlpha: 0, duration: 0.6, ease: 'power2.inOut' }, 6.4);
+      .to(intro, { autoAlpha: 0, duration: 0.6, ease: 'power2.inOut' }, 3.65);
 
-    heroReveal(introTl, 6.5);
+    heroReveal(introTl, 3.75);
   } else {
     // وضع تقليل الحركة: تلاشٍ سريع للمقدمة + شعار ثابت في مركز الهيرو
     gsap.set('.logo-slot-fill', { clipPath: 'circle(50% at 50% 50%)' });

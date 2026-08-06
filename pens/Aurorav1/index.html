@@ -47,20 +47,24 @@
 </head>
 
 <body class="bg-obsidian grain overflow-x-hidden">
-<!-- ============ CYBERNETIC INTRO (biometric → warp → logo) ============ -->
+<!-- ============ CYBERNETIC INTRO (combined fusion scene → particle burst → permanent centered logo) ============ -->
 <div id="cyber-intro" aria-hidden="true">
 
-  <!-- STAGE 1 · Biometric scan (cyber eye) -->
-  <div class="cyber-scene" id="scene-scan">
-    <div class="cyber-bg"></div>
+  <!-- COMBINED SCENE · wallpaper backdrop + cyber eye + 3D spheres + HUD overlay -->
+  <div class="cyber-scene" id="scene-fusion">
+    <div class="fusion-bg" id="fusion-bg">
+      <img src="./imgs/wallpaper.jpeg" alt="">
+    </div>
+    <div class="fusion-glow"></div>
+
     <div class="hud-grid"></div>
     <div class="hud-corner c-tl"></div>
     <div class="hud-corner c-tr"></div>
     <div class="hud-corner c-bl"></div>
     <div class="hud-corner c-br"></div>
 
-    <div class="hud-readout ro-1">SYS.AURORA // SEC-CLEARANCE 7</div>
-    <div class="hud-readout ro-2">GRID 04 · NODE 117</div>
+    <!-- <div class="hud-readout ro-1">SYS.AURORA // SEC-CLEARANCE 7</div>
+    <div class="hud-readout ro-2">GRID 04 · NODE 117</div> -->
 
     <div class="hud-graph">
       <svg viewBox="0 0 220 70" preserveAspectRatio="none">
@@ -70,7 +74,7 @@
       </svg>
     </div>
 
-    <div class="scene1-center">
+    <div class="fusion-center">
       <div class="cyber-glow"></div>
       <div class="eye-hud" id="eye-hud" aria-hidden="true">
         <svg class="eh-rings" viewBox="0 0 100 100">
@@ -93,6 +97,12 @@
         <img id="cyber-eye-img" src="./imgs/cyber-eye.png" alt="Biometric iris scan">
         <div class="scan-beam"></div>
       </div>
+      <div class="sphere-orb" id="sphere-pc-orb">
+        <img class="sphere" id="sphere-pc" src="./imgs/point-cloud-sphere.jpeg" alt="">
+      </div>
+      <div class="sphere-orb" id="sphere-mesh-orb">
+        <img class="sphere" id="sphere-mesh" src="./imgs/mesh-sphere-3d.png" alt="">
+      </div>
       <div class="reticle">
         <span class="ring r1"></span>
         <span class="ring r2"></span>
@@ -100,64 +110,39 @@
         <span class="cross-h"></span>
         <span class="cross-v"></span>
       </div>
+      <div id="burst-flash"></div>
+      <div id="burst-layer"></div>
     </div>
 
-    <div class="hud-label lbl-top">BIOMETRIC VERIFICATION // SUBJECT-072</div>
-    <div class="hud-label lbl-btm">IRIS IDENTIFICATION PROTOCOL v2.1</div>
-
     <div class="hud-progress">
-      <div class="hud-progress-label"><span>RETINA MATCH</span><span class="hud-progress-pct"><b id="scan-progress-pct">000</b><em>%</em></span></div>
+      <!-- <div class="hud-progress-label"><span>RETINA MATCH</span><span class="hud-progress-pct"><b id="scan-progress-pct">000</b><em>%</em></span></div> -->
       <div class="hud-progress-bar"><span id="scan-progress-fill"></span></div>
     </div>
 
-    <div class="hud-tick-row">
-      <span class="tick is-ok">IRIS OK</span>
-      <span class="tick is-ok">PUPIL OK</span>
-      <span class="tick" id="tick-verify">VERIFYING...</span>
-    </div>
   </div>
 
-  <!-- STAGE 2 · Hyperspeed warp + 3D sphere dispersal -->
-  <div class="cyber-scene" id="scene-warp">
-    <div class="warp-bg" id="warp-bg">
-      <img src="./imgs/wallpaper.jpeg" alt="">
-    </div>
-    <div class="tunnel-halo"></div>
-    <div id="warp-streaks"></div>
-    <div id="warp-particles"></div>
-    <div id="sphere-layer">
-      <img class="sphere" id="sphere-pc" src="./imgs/point-cloud-sphere.jpeg" alt="">
-      <img class="sphere" id="sphere-mesh" src="./imgs/mesh-sphere-3d.png" alt="">
-    </div>
-    <div class="tunnel-core"></div>
-  </div>
-
-  <!-- STAGE 3 · Permanent centered logo reveal -->
-  <div class="cyber-scene" id="scene-logo">
-    <div class="scene3-title">AURORA<span>MEDIA SYSTEMS</span></div>
-    <div id="logo-stage">
-      <div id="logo-tilt">
-        <div id="logo-spin">
-          <div class="logo-slot">
-            <svg class="logo-slot-ring" viewBox="0 0 100 100">
-              <defs>
-                <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#00f3ff"/><stop offset="100%" stop-color="#ff0055"/>
-                </linearGradient>
-              </defs>
-              <circle class="ring-solid" cx="50" cy="50" r="48"/>
-              <circle class="ring-dashed" cx="50" cy="50" r="41"/>
-              <circle class="ring-outer" cx="50" cy="50" r="33"/>
-            </svg>
-            <div class="logo-slot-fill">
-              <img id="brand-logo" src="./imgs/logo-2k-without-background.png" alt="Aurora Media logo">
-            </div>
+  <!-- PERMANENT centered logo stage (revealed from within the particle burst) -->
+  <div id="logo-stage">
+    <div id="logo-tilt">
+      <div id="logo-spin">
+        <div class="logo-slot">
+          <svg class="logo-slot-ring" viewBox="0 0 100 100">
+            <defs>
+              <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#00f3ff"/><stop offset="100%" stop-color="#ff0055"/>
+              </linearGradient>
+            </defs>
+            <circle class="ring-solid" cx="50" cy="50" r="48"/>
+            <circle class="ring-dashed" cx="50" cy="50" r="41"/>
+            <circle class="ring-outer" cx="50" cy="50" r="33"/>
+          </svg>
+          <div class="logo-slot-fill">
+            <img id="brand-logo" src="./imgs/logo-2k-without-background.png" alt="Aurora Media logo">
           </div>
         </div>
       </div>
-      <div id="logo-fx"></div>
     </div>
-    <div class="logo-slot-label">LOGO SLOT // INSERT MARK // READY</div>
+    <div id="logo-fx"></div>
   </div>
 
 </div>
