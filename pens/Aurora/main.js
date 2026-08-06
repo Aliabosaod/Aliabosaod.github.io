@@ -1,4 +1,4 @@
-/* ===================== CYBERNETIC INTRO (biometric → tunnel → logo) ===================== */
+/* ===================== CYBERNETIC INTRO (biometric → warp → logo) ===================== */
 window.addEventListener('load', () => {
   // إيقاف السكرول الناعم مؤقتاً أثناء المقدمة
   if (typeof lenis !== 'undefined') lenis.stop();
@@ -97,82 +97,73 @@ window.addEventListener('load', () => {
     gsap.set(stage, { position: 'absolute', left: '50%', top: '50%', xPercent: -50, yPercent: -50, zIndex: 3, scale: 1, opacity: 1 });
   };
 
-  // بناء أنفاق/خطوط البيانات لـ scene 2 (خطوط شعاعية + جسيمات)
-  const buildTunnel = () => {
-    const el = document.getElementById('tunnel-streaks');
-    if (!el) return;
-    const frag = document.createDocumentFragment();
-    for (let i = 0; i < 30; i++) {
+  // بناء مشهد الـ warp لـ scene 2 (خطوط سرعة + جسيمات)
+  const buildWarp = () => {
+    const streaks = document.getElementById('warp-streaks');
+    const particles = document.getElementById('warp-particles');
+    if (!streaks || !particles) return;
+    const sf = document.createDocumentFragment();
+    for (let i = 0; i < 26; i++) {
       const s = document.createElement('span');
       s.className = 'streak';
-      s.style.setProperty('--a', (i / 30) * 360 + 'deg');
+      s.style.setProperty('--a', (i / 26) * 360 + 'deg');
       s.style.setProperty('--c', i % 2 ? '#ff0055' : '#00f3ff');
-      frag.appendChild(s);
+      sf.appendChild(s);
     }
-    for (let i = 0; i < 20; i++) {
+    streaks.appendChild(sf);
+    const pf = document.createDocumentFragment();
+    for (let i = 0; i < 22; i++) {
       const p = document.createElement('span');
       p.className = 't-particle';
-      const a = (i / 20) * 360 + (Math.random() - 0.5) * 30;
-      const d = window.innerHeight * (0.45 + Math.random() * 0.5);
+      const a = (i / 22) * 360 + (Math.random() - 0.5) * 30;
+      const d = window.innerHeight * (0.5 + Math.random() * 0.55);
       p.style.setProperty('--a', a + 'deg');
       p.style.setProperty('--d', d.toFixed(0) + 'px');
       p.style.setProperty('--c', i % 2 ? '#ff0055' : '#00f3ff');
-      frag.appendChild(p);
+      pf.appendChild(p);
     }
-    el.appendChild(frag);
+    particles.appendChild(pf);
   };
 
-  // بناء لوحة الدارات الإلكترونية لـ scene 3 (مسارات + عقد متوهجة)
-  const buildCircuits = () => {
-    const traces = document.getElementById('circuit-traces');
-    const nodes = document.getElementById('circuit-nodes');
-    if (!traces || !nodes) return;
-    const NS = 'http://www.w3.org/2000/svg';
-    const W = 1200, H = 800, N = 15;
-    const tf = document.createDocumentFragment();
-    const nf = document.createDocumentFragment();
+  // دوران ثلاثي الأبعاد للكرتين
+  const startSphereSpin = () => {
+    gsap.set(['#sphere-pc', '#sphere-mesh'], { transformPerspective: 900 });
+    gsap.to('#sphere-pc', { rotationY: 360, duration: 11, repeat: -1, ease: 'none' });
+    gsap.to('#sphere-mesh', { rotationY: -360, duration: 8, repeat: -1, ease: 'none' });
+    gsap.to('#sphere-layer', { rotationZ: 9, yoyo: true, repeat: -1, duration: 3, ease: 'sine.inOut' });
+  };
+
+  // تحويل الكرتين إلى جسيمات متوهجة متباعدة
+  const disperseSpheres = () => {
+    const host = document.getElementById('warp-particles');
+    if (!host) return;
+    const N = 34;
     for (let i = 0; i < N; i++) {
-      let x = Math.random() * W, y = Math.random() * H;
-      let d = 'M' + x.toFixed(0) + ' ' + y.toFixed(0);
-      const steps = 3 + Math.floor(Math.random() * 4);
-      for (let s = 0; s < steps; s++) {
-        const len = 70 + Math.random() * 170;
-        if (Math.random() < 0.5) x += (Math.random() < 0.5 ? -1 : 1) * len;
-        else y += (Math.random() < 0.5 ? -1 : 1) * len;
-        x = Math.max(12, Math.min(W - 12, x));
-        y = Math.max(12, Math.min(H - 12, y));
-        d += ' L' + x.toFixed(0) + ' ' + y.toFixed(0);
-      }
-      const path = document.createElementNS(NS, 'path');
-      path.setAttribute('d', d);
-      path.setAttribute('class', 'circuit-trace');
-      path.setAttribute('style', '--c:' + (i % 2 ? '#ff0055' : '#00f3ff'));
-      tf.appendChild(path);
-      const node = document.createElementNS(NS, 'circle');
-      node.setAttribute('cx', x.toFixed(0));
-      node.setAttribute('cy', y.toFixed(0));
-      node.setAttribute('r', '4.5');
-      node.setAttribute('class', 'circuit-node');
-      node.setAttribute('style', '--c:' + (i % 2 ? '#ff0055' : '#00f3ff'));
-      nf.appendChild(node);
+      const p = document.createElement('span');
+      p.className = 't-particle';
+      const angle = (i / N) * Math.PI * 2 + (Math.random() - 0.5) * 0.6;
+      const dist = window.innerHeight * (0.42 + Math.random() * 0.5);
+      p.style.setProperty('--c', i % 2 ? '#ff0055' : '#00f3ff');
+      host.appendChild(p);
+      gsap.fromTo(p,
+        { xPercent: -50, yPercent: -50, x: 0, y: 0, scale: 1, autoAlpha: 0.95 },
+        { x: Math.cos(angle) * dist, y: Math.sin(angle) * dist, scale: 0.2, autoAlpha: 0,
+          duration: 0.9 + Math.random() * 0.5, delay: i * 0.012, ease: 'power2.out' });
     }
-    traces.appendChild(tf);
-    nodes.appendChild(nf);
   };
 
   if (intro && !reduceMotion) {
-    buildTunnel();
-    buildCircuits();
+    buildWarp();
 
     const scene1 = document.getElementById('scene-scan');
-    const scene2 = document.getElementById('scene-tunnel');
+    const scene2 = document.getElementById('scene-warp');
     const scene3 = document.getElementById('scene-logo');
     const pctEl = document.getElementById('scan-progress-pct');
     const fillEl = document.getElementById('scan-progress-fill');
     const pctState = { v: 0 };
     const tickVerify = document.getElementById('tick-verify');
     const reticle = document.querySelector('.reticle');
-    const eyeWrap = document.getElementById('eye-wrap');
+    const eyeWrap = document.getElementById('cyber-eye-wrap');
     const beam = document.querySelector('.scan-beam');
     const gaugeProg = document.getElementById('scan-gauge-prog');
 
@@ -180,12 +171,14 @@ window.addEventListener('load', () => {
     gsap.set(scene2, { autoAlpha: 0 });
     gsap.set(scene3, { autoAlpha: 0 });
     gsap.set(reticle, { scale: 1.7, autoAlpha: 0 });
-    gsap.set('.iris', { scale: 0.88 });
-    gsap.set(eyeWrap, { scale: 1.14 });
+    gsap.set(eyeWrap, { scale: 1.22, autoAlpha: 0 });
     gsap.set('.streak', { scaleY: 0.12, autoAlpha: 0 });
-    gsap.set('.t-ring', { scale: 0.35, autoAlpha: 0 });
+    gsap.set('.t-particle', { autoAlpha: 0 });
+    gsap.set('#sphere-layer', { autoAlpha: 0, scale: 0.35, transformPerspective: 900 });
+    gsap.set('#warp-bg', { autoAlpha: 0 });
+    gsap.set('.tunnel-halo', { autoAlpha: 0, scale: 0.8 });
     gsap.set('.tunnel-core', { autoAlpha: 0 });
-    gsap.set('.cyber-glow, .eye-hud, .eye-shade, .iris-texture', { autoAlpha: 0 });
+    gsap.set('.cyber-glow, #eye-hud', { autoAlpha: 0 });
 
     const confirmAccess = () => {
       if (tickVerify) { tickVerify.classList.add('is-ok', 'verified'); tickVerify.textContent = 'IDENTITY OK'; }
@@ -196,19 +189,14 @@ window.addEventListener('load', () => {
     };
 
     introTl
-      // ---- SCENE 1 · biometric scan ----
+      // ---- STAGE 1 · biometric scan (cyber eye) ----
       .to('.hud-grid', { autoAlpha: 1, duration: 0.5, ease: 'power1.out' }, 0.1)
       .to('.hud-corner', { autoAlpha: 1, duration: 0.4, stagger: 0.08, ease: 'power2.out' }, 0.25)
-      .to(eyeWrap, { autoAlpha: 1, scale: 1, duration: 0.5, ease: 'power3.out' }, 0.3)
-      .to('.eye-lid-top', { yPercent: -100, duration: 0.65, ease: 'power3.inOut' }, 0.5)
-      .to('.eye-lid-bottom', { yPercent: 100, duration: 0.65, ease: 'power3.inOut' }, 0.5)
-      .to('.iris', { scale: 1, duration: 0.45, ease: 'power2.out' }, 0.55)
+      .to(eyeWrap, { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'power3.out' }, 0.3)
       .to('.cyber-glow', { autoAlpha: 1, duration: 0.7, ease: 'power2.out' }, 0.5)
-      .to('.eye-shade', { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 0.9)
-      .to('.iris-texture', { autoAlpha: 1, duration: 0.8, ease: 'power2.out' }, 1.0)
-      .to('.eye-hud', { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 1.4)
       .to('.hud-label', { autoAlpha: 1, duration: 0.4, stagger: 0.2, ease: 'power2.out' }, 0.7)
       .to('.hud-readout', { autoAlpha: 1, duration: 0.4, stagger: 0.15, ease: 'power2.out' }, 0.75)
+      .to('#eye-hud', { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 0.8)
       .to('.hud-graph', { autoAlpha: 1, duration: 0.4 }, 0.85)
       .to('.hud-graph .g-line', { strokeDashoffset: 0, duration: 0.8, ease: 'power1.inOut' }, 0.9)
       .to(beam, { autoAlpha: 1, duration: 0.25 }, 0.95)
@@ -227,44 +215,46 @@ window.addEventListener('load', () => {
       .to('.hud-progress', { autoAlpha: 1, duration: 0.4 }, 1.2)
       .to('.hud-tick-row .tick', { autoAlpha: 1, duration: 0.3, stagger: 0.18, ease: 'power2.out' }, 1.5)
       .to(reticle, { autoAlpha: 1, scale: 1, duration: 0.5, ease: 'back.out(2)' }, 1.75)
-      .to('.scene1-center', { x: 5, y: -3, duration: 0.07, repeat: 4, yoyo: true, ease: 'none' }, 2.4)
-      .add(confirmAccess, 2.55)
-      .to(reticle, { scale: 0.92, duration: 0.25, ease: 'power2.in' }, 2.6)
-      // ---- zoom through the pupil ----
-      .to('.hud-grid, .hud-corner, .hud-readout, .hud-label, .hud-graph, .hud-tick-row, .hud-progress, .eye-hud, .cyber-glow, .eye-shade, .iris-texture', { autoAlpha: 0, duration: 0.35 }, 2.7)
-      .to(eyeWrap, { scale: 10, autoAlpha: 0, duration: 0.7, ease: 'power4.in' }, 2.75)
-      // ---- SCENE 2 · data tunnel / warp ----
-      .to(scene1, { autoAlpha: 0, duration: 0.25 }, 3.3)
-      .to(scene2, { autoAlpha: 1, duration: 0.3 }, 3.35)
-      .to('.tunnel-halo', { autoAlpha: 1, scale: 1.6, duration: 0.8, ease: 'power2.out' }, 3.4)
-      .to('.t-ring', { scale: 2.6, autoAlpha: 1, duration: 0.85, stagger: 0.09, ease: 'power2.in' }, 3.45)
-      .to('#tunnel-rings', { rotation: 90, duration: 2.2, ease: 'none' }, 3.45)
-      .to('.streak', { scaleY: 1, autoAlpha: 0.8, duration: 0.85, stagger: 0.015, ease: 'power2.in' }, 3.5)
-      .to('.t-particle', { opacity: 0.9, duration: 0.15, stagger: 0.02 }, 3.5)
+      .to('.scene1-center', { x: 5, y: -3, duration: 0.07, repeat: 4, yoyo: true, ease: 'none' }, 2.5)
+      .add(confirmAccess, 2.65)
+      .to(reticle, { scale: 0.92, duration: 0.25, ease: 'power2.in' }, 2.7)
+      // ---- hyper-fast zoom through the pupil ----
+      .to('.hud-grid, .hud-corner, .hud-readout, .hud-label, .hud-graph, .hud-tick-row, .hud-progress, #eye-hud, .cyber-glow, .reticle', { autoAlpha: 0, duration: 0.3 }, 2.85)
+      .to(eyeWrap, { scale: 22, autoAlpha: 0, duration: 0.7, ease: 'power4.in' }, 2.9)
+      .to(scene1, { autoAlpha: 0, duration: 0.2 }, 3.45)
+      // ---- STAGE 2 · hyperspeed warp + 3D spheres ----
+      .to(scene2, { autoAlpha: 1, duration: 0.25 }, 3.45)
+      .to('#warp-bg', { autoAlpha: 1, duration: 0.7, ease: 'power2.out' }, 3.5)
+      .to('.tunnel-halo', { autoAlpha: 1, scale: 1.6, duration: 0.8, ease: 'power2.out' }, 3.55)
+      .to('.streak', { scaleY: 1, autoAlpha: 0.7, duration: 0.8, stagger: 0.015, ease: 'power2.in' }, 3.6)
+      .to('.t-particle', { opacity: 0.9, duration: 0.15, stagger: 0.02 }, 3.6)
       .to('.t-particle', {
         x: (i, el) => Math.cos(parseFloat(el.style.getPropertyValue('--a')) * Math.PI / 180) * parseFloat(el.style.getPropertyValue('--d')),
         y: (i, el) => Math.sin(parseFloat(el.style.getPropertyValue('--a')) * Math.PI / 180) * parseFloat(el.style.getPropertyValue('--d')),
-        opacity: 0, duration: 1.35, stagger: 0.02, ease: 'power1.out',
-      }, 3.65)
-      .to('.tunnel-core', { autoAlpha: 1, duration: 0.2 }, 4.0)
-      .to('.tunnel-core', { scale: 26, duration: 0.65, ease: 'power2.in' }, 4.2)
-      // ---- SCENE 3 · logo placeholder ----
-      .to(scene2, { autoAlpha: 0, duration: 0.25 }, 4.7)
-      .to(scene3, { autoAlpha: 1, duration: 0.3 }, 4.75)
-      .to('#circuit-svg', { autoAlpha: 1, duration: 0.7, ease: 'power2.out' }, 4.8)
-      .to('.circuit-node', { scale: 1.7, opacity: 0.7, duration: 0.5, stagger: 0.05, yoyo: true, repeat: 2, ease: 'sine.inOut' }, 5.0)
-      .to('.scene3-title', { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 5.0)
-      .to('#logo-stage', { autoAlpha: 1, duration: 0.4 }, 5.1)
-      .to('.logo-slot-ring .ring-solid', { strokeDashoffset: 0, duration: 0.8, ease: 'power2.inOut' }, 5.15)
-      .to('.logo-slot-fill', { clipPath: 'circle(50% at 50% 50%)', duration: 0.7, ease: 'power3.out' }, 5.25)
-      .to('.logo-slot-label', { autoAlpha: 1, duration: 0.5 }, 5.6)
-      .call(setupTilt, null, 5.7)
-      .call(reparentLogo, null, 6.02)
-      .call(finalizeLogo, null, 6.08)
+        opacity: 0, duration: 1.2, stagger: 0.02, ease: 'power1.out',
+      }, 3.75)
+      .call(startSphereSpin, null, 4.0)
+      .to('#sphere-layer', { autoAlpha: 1, scale: 1, duration: 0.55, ease: 'back.out(1.4)' }, 4.0)
+      .to('.tunnel-core', { autoAlpha: 1, duration: 0.3 }, 4.05)
+      .to('#sphere-layer', { scale: 1.35, duration: 0.9, ease: 'sine.inOut' }, 4.4)
+      // ---- spheres disperse into glowing energy particles ----
+      .call(disperseSpheres, null, 4.9)
+      .to('#sphere-layer', { scale: 3.2, autoAlpha: 0, duration: 0.65, ease: 'power2.in' }, 4.95)
+      .to(scene2, { autoAlpha: 0, duration: 0.25 }, 5.45)
+      // ---- STAGE 3 · permanent centered logo reveal ----
+      .to(scene3, { autoAlpha: 1, duration: 0.3 }, 5.45)
+      .to('.scene3-title', { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 5.5)
+      .to('#logo-stage', { autoAlpha: 1, duration: 0.4 }, 5.55)
+      .to('.logo-slot-ring .ring-solid', { strokeDashoffset: 0, duration: 0.8, ease: 'power2.inOut' }, 5.6)
+      .to('.logo-slot-fill', { clipPath: 'circle(50% at 50% 50%)', duration: 0.7, ease: 'power3.out' }, 5.7)
+      .to('.logo-slot-label', { autoAlpha: 1, duration: 0.5 }, 6.05)
+      .call(setupTilt, null, 6.1)
+      .call(reparentLogo, null, 6.25)
+      .call(finalizeLogo, null, 6.3)
       // ---- outro ----
-      .to(intro, { autoAlpha: 0, duration: 0.6, ease: 'power2.inOut' }, 6.1);
+      .to(intro, { autoAlpha: 0, duration: 0.6, ease: 'power2.inOut' }, 6.4);
 
-    heroReveal(introTl, 6.2);
+    heroReveal(introTl, 6.5);
   } else {
     // وضع تقليل الحركة: تلاشٍ سريع للمقدمة + شعار ثابت في مركز الهيرو
     gsap.set('.logo-slot-fill', { clipPath: 'circle(50% at 50% 50%)' });

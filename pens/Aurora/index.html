@@ -47,10 +47,10 @@
 </head>
 
 <body class="bg-obsidian grain overflow-x-hidden">
-<!-- ============ CYBERNETIC INTRO (biometric → tunnel → logo) ============ -->
+<!-- ============ CYBERNETIC INTRO (biometric → warp → logo) ============ -->
 <div id="cyber-intro" aria-hidden="true">
 
-  <!-- SCENE 1 · Biometric eye scan -->
+  <!-- STAGE 1 · Biometric scan (cyber eye) -->
   <div class="cyber-scene" id="scene-scan">
     <div class="cyber-bg"></div>
     <div class="hud-grid"></div>
@@ -89,27 +89,16 @@
           <circle class="gg-prog" id="scan-gauge-prog" cx="50" cy="50" r="48"/>
         </svg>
       </div>
-      <div class="eye-wrap" id="eye-wrap">
-        <div class="eye">
-          <div class="eye-lid eye-lid-top"></div>
-          <div class="eye-lid eye-lid-bottom"></div>
-          <div class="iris">
-            <div class="iris-texture"></div>
-            <div class="pupil"></div>
-          </div>
-          <div class="eye-reflect"></div>
-          <div class="eye-reflect-2"></div>
-          <div class="eye-reflect-3"></div>
-          <div class="eye-shade"></div>
-          <div class="scan-beam"></div>
-        </div>
-        <div class="reticle">
-          <span class="ring r1"></span>
-          <span class="ring r2"></span>
-          <span class="ring r3"></span>
-          <span class="cross-h"></span>
-          <span class="cross-v"></span>
-        </div>
+      <div class="cyber-eye-wrap" id="cyber-eye-wrap">
+        <img id="cyber-eye-img" src="./imgs/cyber-eye.png" alt="Biometric iris scan">
+        <div class="scan-beam"></div>
+      </div>
+      <div class="reticle">
+        <span class="ring r1"></span>
+        <span class="ring r2"></span>
+        <span class="ring r3"></span>
+        <span class="cross-h"></span>
+        <span class="cross-v"></span>
       </div>
     </div>
 
@@ -128,25 +117,23 @@
     </div>
   </div>
 
-  <!-- SCENE 2 · Data tunnel / warp -->
-  <div class="cyber-scene" id="scene-tunnel">
+  <!-- STAGE 2 · Hyperspeed warp + 3D sphere dispersal -->
+  <div class="cyber-scene" id="scene-warp">
+    <div class="warp-bg" id="warp-bg">
+      <img src="./imgs/wallpaper.jpeg" alt="">
+    </div>
     <div class="tunnel-halo"></div>
-    <div id="tunnel-streaks"></div>
-    <div id="tunnel-rings">
-      <span class="t-ring"></span>
-      <span class="t-ring"></span>
-      <span class="t-ring"></span>
-      <span class="t-ring"></span>
+    <div id="warp-streaks"></div>
+    <div id="warp-particles"></div>
+    <div id="sphere-layer">
+      <img class="sphere" id="sphere-pc" src="./imgs/point-cloud-sphere.jpeg" alt="">
+      <img class="sphere" id="sphere-mesh" src="./imgs/mesh-sphere-3d.png" alt="">
     </div>
     <div class="tunnel-core"></div>
   </div>
 
-  <!-- SCENE 3 · Logo placeholder reveal -->
+  <!-- STAGE 3 · Permanent centered logo reveal -->
   <div class="cyber-scene" id="scene-logo">
-    <svg id="circuit-svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
-      <g id="circuit-traces" fill="none"></g>
-      <g id="circuit-nodes"></g>
-    </svg>
     <div class="scene3-title">AURORA<span>MEDIA SYSTEMS</span></div>
     <div id="logo-stage">
       <div id="logo-tilt">
