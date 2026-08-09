@@ -44,6 +44,121 @@
 
 <link rel="stylesheet" href="style.css">
 
+<style>
+  /* ============ INTRO · responsive wallpaper backdrop ============ */
+  .fusion-bg picture{ position:absolute; inset:0; }
+
+  /* ============ SECTION 2 · STRATEGIC SERVICES ============ */
+  #strategy{ background:#060309; }
+  #strategy .strat-bg{ position:absolute; inset:0; }
+  #strategy .strat-bg picture{ position:absolute; inset:0; }
+  #strategy .strat-bg img{ width:100%; height:100%; object-fit:cover; filter:saturate(1.15) brightness(1); }
+  #strategy .strat-bg::after{ content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(120% 100% at 20% 30%, rgba(122,43,255,0.16) 0%, transparent 55%),
+      radial-gradient(120% 100% at 85% 75%, rgba(0,243,255,0.10) 0%, transparent 55%);
+    mix-blend-mode:screen; }
+
+  #strategy .strat-wrap{ position:relative; z-index:2; }
+
+  /* frosted-glass panel with soft purple glow border */
+  #strategy .strat-panel{
+    background:rgba(24,14,44,0.42);
+    -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+    border:1px solid rgba(186,85,211,0.35);
+    box-shadow:0 0 25px rgba(186,85,211,0.4), inset 0 0 34px rgba(122,43,255,0.10);
+    border-radius:22px;
+  }
+
+  #strategy .strat-eyebrow{ font-family:'JetBrains Mono',monospace; font-size:11px;
+    letter-spacing:0.3em; text-transform:uppercase; color:#00f3ff; opacity:0.85;
+    text-shadow:0 0 10px rgba(0,243,255,0.5); margin-bottom:10px; }
+  #strategy .strat-title{ font-family:'Bricolage Grotesque',sans-serif; font-weight:700;
+    letter-spacing:0.02em; color:#F3F1EC; margin-bottom:26px; }
+  #strategy .strat-title span{ background:linear-gradient(100deg,#00f3ff 0%,#ff0055 55%,#7a2bff 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+  #strategy .strat-item{
+    position:relative; display:flex; align-items:center; gap:16px; cursor:pointer;
+    transition:transform .35s ease, box-shadow .35s ease, background .35s ease;
+    font-size: 8rem;
+    font-weight: bold;
+    color: transparent;
+    background-image: url('https://images.unsplash.com/photo-1732535725600-f805d8b33c9c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); 
+    background-size: 200%; /* Enlarged for smooth animation */
+    background-position: 0 50%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: animate-background 5s infinite alternate linear;
+  }
+  @keyframes animate-background {
+    0% {
+      background-position: 0 50%;
+    }
+    100% {
+      background-position: 100% 50%;
+    }
+  }
+  #strategy .strat-ico{ flex:0 0 auto; width:16px; height:16px; border-radius:50%;
+    border:1.5px solid rgba(186,85,211,0.95);
+    background:radial-gradient(circle at 35% 35%, #b388ff 0%, #7a2bff 55%, #3b0f66 100%);
+    box-shadow:0 0 10px rgba(186,85,211,0.9), 0 0 22px rgba(186,85,211,0.5);
+    animation:stratIcoPulse 2.6s ease-in-out infinite; }
+  @keyframes stratIcoPulse{
+    0%,100%{ box-shadow:0 0 8px rgba(186,85,211,0.7), 0 0 18px rgba(186,85,211,0.4); }
+    50%{ box-shadow:0 0 14px rgba(186,85,211,1), 0 0 30px rgba(186,85,211,0.7); }
+  }
+
+  #strategy .strat-txt{ font-family:'Inter',sans-serif; color:#ffffff; font-weight:600;
+    letter-spacing:0.01em; line-height:1.15; }
+
+  #strategy .strat-line{ position:absolute; left:0; bottom:-1px; height:2px; width:100%;
+    transform:scaleX(0); transform-origin:left; border-radius:2px;
+    background:linear-gradient(90deg,#7a2bff 0%,#00f3ff 100%);
+    box-shadow:0 0 10px rgba(186,85,211,0.9), 0 0 24px rgba(0,243,255,0.5); }
+
+  /* DESKTOP · panel on the LEFT, 5 horizontal rows */
+  @media (min-width: 769px){
+    #strategy .strat-wrap{ display:flex; align-items:center; min-height:100vh; }
+    #strategy .strat-panel{ width:min(560px,32vw); margin-left:clamp(24px,9vw,140px);
+      padding:clamp(30px,4vw,52px) clamp(30px,4vw,52px) clamp(34px,4vw,56px); }
+    #strategy .strat-title{ font-size:clamp(30px,3.4vw,44px); }
+    #strategy .strat-list{ display:flex; flex-direction:column; gap:4px; }
+    #strategy .strat-item{ padding:15px 10px; }
+    #strategy .strat-item:hover{ transform:translateX(8px); }
+    #strategy .strat-txt{ font-size:clamp(17px,1.35vw,20px); }
+  }
+
+  /* MOBILE · tall slender container centered at top, stacked glowing buttons */
+  @media (max-width: 768px){
+    #strategy{ min-height: 200vh; }
+    #strategy .strat-wrap{ display:flex; flex-direction:column; align-items:center;
+      min-height:100vh; padding:clamp(84px,14vh,112px) 24px clamp(48px,8vh,80px); }
+    #strategy .strat-panel{ width:min(80vw,360px); text-align:center;
+      padding:clamp(30px,6vw,44px) clamp(20px,5vw,28px); }
+    #strategy .strat-title{ font-size:clamp(26px,7vw,34px); }
+    #strategy .strat-list{ display:flex; flex-direction:column; gap:14px; }
+    #strategy .strat-item{
+      width:100%;
+      border:1px solid rgba(186,85,211,0.55);
+      border-radius:16px;
+      padding:16px 18px;
+      /* background:rgba(122,43,255,0.16); */
+      box-shadow:0 0 18px rgba(186,85,211,0.35), inset 0 0 20px rgba(122,43,255,0.12);
+    }
+    #strategy .strat-item:hover{ background:rgba(122,43,255,0.30);
+      box-shadow:0 0 26px rgba(186,85,211,0.6), inset 0 0 24px rgba(122,43,255,0.2); }
+    #strategy .strat-txt{ font-size:1.08rem; font-weight:700; }
+    #strategy .strat-ico{ width:18px; height:18px; }
+    #strategy .strat-line{ left:14px; right:14px; bottom:8px; width:auto; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    #strategy .strat-item, #strategy .strat-panel{ opacity:1 !important; transform:none !important; }
+  }
+</style>
+
 </head>
 
 <body class="bg-obsidian grain overflow-x-hidden">
@@ -53,7 +168,10 @@
   <!-- COMBINED SCENE · wallpaper backdrop + cyber eye + 3D spheres + HUD overlay -->
   <div class="cyber-scene" id="scene-fusion">
     <div class="fusion-bg" id="fusion-bg">
-      <img src="./imgs/wallpaper.jpeg" alt="">
+      <picture>
+        <source media="(max-width: 768px)" srcset="./imgs/intro-wallpaper-mobile.png">
+        <img src="./imgs/intro-wallpaper-desktop.jpeg" alt="">
+      </picture>
     </div>
     <div class="fusion-glow"></div>
 
@@ -236,31 +354,50 @@
 
   <div class="relative z-10 px-6 md:px-10">
     <div id="hero-logo-slot"></div>
-    <p class="font-mono text-xs md:text-sm tracking-[0.3em] text-cyan/80 uppercase mb-6">
-      Creative Studio — Est. Signals of Motion
-    </p>
-    <h1 class="font-display font-semibold leading-[0.92] text-[13vw] md:text-[7.2vw] tracking-tight">
-      <span class="block text-bone">Ideas that</span>
-      <span class="block text-aurora">tumble into</span>
-      <span class="block stroke-text">motion.</span>
-    </h1>
-    <p class="max-w-md mt-8 text-dim text-base md:text-lg font-body">
-      Aurora Media builds brand systems, digital campaigns and video that move —
-      twelve disciplines, one studio, gliding across your scroll.
-    </p>
-    <div class="mt-10 flex items-center gap-5">
-      <a href="#services" class="cta-btn font-mono text-xs uppercase tracking-widest px-6 py-3.5 rounded-full font-medium">
-        View the work
-      </a>
-      <a href="#contact" class="neon-ghost font-mono text-xs uppercase tracking-widest text-bone/70 hover:text-cyan transition-colors">
-        Book a call →
-      </a>
+  </div>
+</section>
+
+<!-- ============ SECTION 2 · STRATEGIC SERVICES ============ -->
+<section id="strategy" class="relative min-h-screen overflow-hidden">
+
+  <div class="strat-bg">
+    <picture>
+      <source media="(max-width: 768px)" srcset="./imgs/wallpaper-mobile.png">
+      <img src="./imgs/wallpaper-desktop.png" alt="">
+    </picture>
+  </div>
+  <div class="strat-wrap">
+    <div class="strat-panel">
+      <ul class="strat-list">
+        <li class="strat-item" style="--i:0">
+          <span class="strat-ico" aria-hidden="true"></span>
+          <span class="strat-txt">Market Research</span>
+          <span class="strat-line" aria-hidden="true"></span>
+        </li>
+        <li class="strat-item" style="--i:1">
+          <span class="strat-ico" aria-hidden="true"></span>
+          <span class="strat-txt">Competitor Analysis</span>
+          <span class="strat-line" aria-hidden="true"></span>
+        </li>
+        <li class="strat-item" style="--i:2">
+          <span class="strat-ico" aria-hidden="true"></span>
+          <span class="strat-txt">Business Assessment</span>
+          <span class="strat-line" aria-hidden="true"></span>
+        </li>
+        <li class="strat-item" style="--i:3">
+          <span class="strat-ico" aria-hidden="true"></span>
+          <span class="strat-txt">Strategic Recommendations</span>
+          <span class="strat-line" aria-hidden="true"></span>
+        </li>
+        <li class="strat-item" style="--i:4">
+          <span class="strat-ico" aria-hidden="true"></span>
+          <span class="strat-txt">Growth Consultation</span>
+          <span class="strat-line" aria-hidden="true"></span>
+        </li>
+      </ul>
     </div>
   </div>
 
-  <div class="absolute bottom-8 left-6 md:left-10 font-mono text-[10px] tracking-widest text-dim uppercase flex items-center gap-2">
-    <span class="w-1.5 h-1.5 rounded-full bg-cyan animate-pulse"></span> Scroll to unfold
-  </div>
 </section>
 
 <!-- ============ MARQUEE ============ -->
@@ -361,5 +498,30 @@
 </footer>
 
 <script src="main.js"></script>
+<script>
+  /* ============ SECTION 2 · STRATEGIC SERVICES entrance ============ */
+  (function(){
+    var strat = document.getElementById('strategy');
+    if(!strat || typeof gsap === 'undefined') return;
+    var items = strat.querySelectorAll('.strat-item');
+    var panel = strat.querySelector('.strat-panel');
+    if(!panel || !items.length) return;
+
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    gsap.from(panel, {
+      autoAlpha: 0, y: 34, duration: 0.9, ease: 'power3.out',
+      scrollTrigger: { trigger: '#strategy', start: 'top 75%', once: true }
+    });
+    gsap.from(items, {
+      y: 26, autoAlpha: 0, duration: 0.65, stagger: 0.1, ease: 'power3.out',
+      scrollTrigger: { trigger: '#strategy .strat-list', start: 'top 82%', once: true }
+    });
+    gsap.fromTo('.strat-line', { scaleX: 0 }, {
+      scaleX: 1, duration: 0.85, stagger: 0.1, ease: 'power2.out', delay: 0.35,
+      scrollTrigger: { trigger: '#strategy .strat-list', start: 'top 82%', once: true }
+    });
+  })();
+</script>
 </body>
-</html
+</html>

@@ -6,9 +6,7 @@ window.addEventListener('load', () => {
   const intro = document.getElementById('cyber-intro');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // إخفاء محتوى الهيرو حتى يُكشف في نهاية المقدمة
-  gsap.set('#hero h1 span', { y: 100, opacity: 0, rotateX: 45 });
-  gsap.set('#hero p, #hero .cta-btn', { y: 30, opacity: 0 });
+  // إخفاء العناصر العائمة للهيرو حتى يُكشف عند نهاية المقدمة
   gsap.set('.floater', { scale: 0, opacity: 0, rotateX: gsap.utils.random(-40, 40), rotateY: gsap.utils.random(-40, 40) });
 
   const finish = () => {
@@ -18,11 +16,9 @@ window.addEventListener('load', () => {
 
   const introTl = gsap.timeline({ onComplete: finish });
 
-  // إظهار محتوى الهيرو بالتتابع بعد تلاشي المقدمة
+  // إظهار العناصر العائمة للهيرو بعد تلاشي المقدمة
   const heroReveal = (tl, at) => {
-    tl.to('#hero h1 span', { y: 0, opacity: 1, rotateX: 0, duration: 1.2, stagger: 0.15, ease: 'power4.out' }, at)
-      .to('.floater', { scale: 1, opacity: 1, duration: 1.3, stagger: 0.08, ease: 'elastic.out(1, 0.75)' }, at + 0.3)
-      .to('#hero p, #hero .cta-btn, #hero a[href="#contact"]', { y: 0, opacity: 1, duration: 1, stagger: 0.1, ease: 'power3.out' }, at + 0.5);
+    tl.to('.floater', { scale: 1, opacity: 1, duration: 1.3, stagger: 0.08, ease: 'elastic.out(1, 0.75)' }, at + 0.3);
   };
 
   // إمالة ثلاثية الأبعاد للشعار تتبع المؤشر
@@ -227,7 +223,6 @@ window.addEventListener('load', () => {
     // وضع تقليل الحركة: تلاشٍ سريع للمقدمة + شعار ثابت في مركز الهيرو
     gsap.set('.logo-slot-fill', { clipPath: 'circle(50% at 50% 50%)' });
     gsap.set('.logo-slot-ring .ring-solid', { strokeDashoffset: 0 });
-    gsap.set('#hero h1 span, #hero p, #hero .cta-btn, #hero a[href="#contact"]', { y: 0, opacity: 1, rotateX: 0 });
     gsap.set('.floater', { scale: 1, opacity: 1, rotateX: 0, rotateY: 0 });
     introTl.call(reparentLogo, null, 0)
             .call(finalizeLogo, null, 0.05);
