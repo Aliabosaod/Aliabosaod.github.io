@@ -78,8 +78,8 @@ window.addEventListener('load', () => {
       gsap.to('#logo-spin', { rotationX: 14, yoyo: true, repeat: -1, duration: 3.4, ease: 'sine.inOut' });
       gsap.to(stage, { y: -16, yoyo: true, repeat: -1, duration: 3.2, ease: 'sine.inOut' });
       gsap.fromTo('#brand-logo',
-        { filter: 'brightness(0.92) drop-shadow(0 0 16px rgba(0,243,255,0.32)) drop-shadow(0 0 58px rgba(255,0,85,0.22))' },
-        { filter: 'brightness(1.28) drop-shadow(0 0 34px rgba(0,243,255,0.72)) drop-shadow(0 0 92px rgba(255,0,85,0.45))',
+        { filter: 'brightness(0.92) ' },
+        { filter: 'brightness(1.28) ',
           duration: 2.1, yoyo: true, repeat: -1, ease: 'sine.inOut' });
       emitParticles();
     }
@@ -93,24 +93,7 @@ window.addEventListener('load', () => {
     gsap.set(stage, { position: 'absolute', left: '50%', top: '50%', xPercent: -50, yPercent: -50, zIndex: 3, scale: 1, opacity: 1 });
   };
 
-  // دوران ثلاثي الأبعاد للكرتين + نبض توهج مستمر
-  const startSphereSpin = () => {
-    gsap.set(['#sphere-pc', '#sphere-mesh'], { transformPerspective: 900 });
-    gsap.to('#sphere-pc', { rotationY: 360, duration: 12, repeat: -1, ease: 'none' });
-    gsap.to('#sphere-mesh', { rotationY: -360, duration: 9, repeat: -1, ease: 'none' });
-    gsap.to('#sphere-pc-orb', { y: -18, yoyo: true, repeat: -1, duration: 3.2, ease: 'sine.inOut' });
-    gsap.to('#sphere-mesh-orb', { y: 18, yoyo: true, repeat: -1, duration: 3.2, ease: 'sine.inOut' });
-    gsap.fromTo('#sphere-pc',
-      { filter: 'brightness(0.92) drop-shadow(0 0 14px rgba(0,243,255,0.4))' },
-      { filter: 'brightness(1.4) drop-shadow(0 0 36px rgba(0,243,255,0.9))',
-        duration: 1.9, yoyo: true, repeat: -1, ease: 'sine.inOut' });
-    gsap.fromTo('#sphere-mesh',
-      { filter: 'brightness(0.92) drop-shadow(0 0 14px rgba(255,0,85,0.4))' },
-      { filter: 'brightness(1.4) drop-shadow(0 0 36px rgba(255,0,85,0.9))',
-        duration: 1.9, yoyo: true, repeat: -1, ease: 'sine.inOut' });
-  };
-
-  // انحلال العين والكرتين إلى انفجار جسيمات متوهجة عند اكتمال المسح
+  // انحلال العين إلى انفجار جسيمات متوهجة عند اكتمال المسح
   const burstOut = () => {
     const host = document.getElementById('burst-layer');
     if (host) {
@@ -130,10 +113,8 @@ window.addEventListener('load', () => {
       }
       host.appendChild(pf);
     }
-    // انحلال العين والكرتين نحو الخارج
-    gsap.to('.cyber-eye-wrap', { scale: 2.4, autoAlpha: 0, duration: 0.6, ease: 'power2.in' });
-    gsap.to('#sphere-pc-orb', { scale: 2.6, x: 46, y: -46, autoAlpha: 0, duration: 0.6, ease: 'power2.in' });
-    gsap.to('#sphere-mesh-orb', { scale: 2.6, x: -46, y: 46, autoAlpha: 0, duration: 0.6, ease: 'power2.in' });
+    // انحلال العين نحو الخارج
+    gsap.to('.cyber-eye-wrap', { scale: 2.0, autoAlpha: 0, duration: 0.6, ease: 'power2.in' });
     gsap.to('.cyber-glow, .eye-hud', { autoAlpha: 0, duration: 0.4 });
     // وميض مركزي ساطع
     const flash = document.getElementById('burst-flash');
@@ -156,7 +137,6 @@ window.addEventListener('load', () => {
     gsap.set('.fusion-glow', { autoAlpha: 0 });
     gsap.set(reticle, { scale: 1.6, autoAlpha: 0 });
     gsap.set(eyeWrap, { scale: 1.25, autoAlpha: 0 });
-    gsap.set('.sphere-orb', { scale: 0.4, autoAlpha: 0 });
     gsap.set('#logo-stage', { scale: 0.3, autoAlpha: 0 });
     gsap.set('.cyber-glow, #eye-hud', { autoAlpha: 0 });
 
@@ -174,11 +154,9 @@ window.addEventListener('load', () => {
       .to('.fusion-glow', { autoAlpha: 1, duration: 0.9, ease: 'power2.out' }, 0.25)
       .to('.hud-grid', { autoAlpha: 1, duration: 0.5, ease: 'power1.out' }, 0.15)
       .to('.hud-corner', { autoAlpha: 1, duration: 0.4, stagger: 0.08, ease: 'power2.out' }, 0.3)
-      // ---- centerpiece · cyber eye + flanking 3D spheres ----
+      // ---- centerpiece · dominant cyber eye ----
       .to(eyeWrap, { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'power3.out' }, 0.35)
       .to('.cyber-glow', { autoAlpha: 1, duration: 0.7, ease: 'power2.out' }, 0.55)
-      .to('.sphere-orb', { autoAlpha: 1, scale: 1, duration: 0.7, stagger: 0.18, ease: 'back.out(1.6)' }, 0.55)
-      .call(startSphereSpin, null, 0.6)
       // ---- HUD overlay · labels, readouts, rings, graph, beam ----
       .to('.hud-label', { autoAlpha: 1, duration: 0.4, stagger: 0.2, ease: 'power2.out' }, 0.7)
       .to('.hud-readout', { autoAlpha: 1, duration: 0.4, stagger: 0.15, ease: 'power2.out' }, 0.75)
@@ -205,7 +183,7 @@ window.addEventListener('load', () => {
       .to('.fusion-center', { x: 5, y: -3, duration: 0.07, repeat: 4, yoyo: true, ease: 'none' }, 2.5)
       .add(confirmAccess, 2.6)
       .to(reticle, { scale: 0.9, duration: 0.25, ease: 'power2.in' }, 2.65)
-      // ---- HUD out + morph: eye & spheres dissolve into a glowing particle burst ----
+      // ---- HUD out + morph: eye dissolves into a glowing particle burst ----
       .to('.hud-grid, .hud-corner, .hud-readout, .hud-label, .hud-graph, .hud-tick-row, .hud-progress, #eye-hud, .cyber-glow, .reticle, .scan-beam', { autoAlpha: 0, duration: 0.3 }, 2.75)
       .call(burstOut, null, 2.8)
       // ---- permanent centered logo revealed from within the burst ----

@@ -48,114 +48,61 @@
   /* ============ INTRO · responsive wallpaper backdrop ============ */
   .fusion-bg picture{ position:absolute; inset:0; }
 
-  /* ============ SECTION 2 · STRATEGIC SERVICES ============ */
-  #strategy{ background:#060309; }
-  #strategy .strat-bg{ position:absolute; inset:0; }
-  #strategy .strat-bg picture{ position:absolute; inset:0; }
-  #strategy .strat-bg img{ width:100%; height:100%; object-fit:cover; filter:saturate(1.15) brightness(1); }
-  #strategy .strat-bg::after{ content:''; position:absolute; inset:0;
-    background:
-      radial-gradient(120% 100% at 20% 30%, rgba(122,43,255,0.16) 0%, transparent 55%),
-      radial-gradient(120% 100% at 85% 75%, rgba(0,243,255,0.10) 0%, transparent 55%);
-    mix-blend-mode:screen; }
+  /* ============ SECTION 2 · STRATEGY & MARKET RESEARCH DASHBOARD ============ */
+  #strategy{ background:linear-gradient(180deg, #214373 0%, #202576 45%, #28124e 78%, #160a2e 100%); }
 
-  #strategy .strat-wrap{ position:relative; z-index:2; }
+  /* UPPER · full-width hero banner (title only, no overlays) */
+  #strategy .strat-hero{ position:relative; width:100%; min-height:100vh; overflow:hidden; }
+  #strategy .strat-hero picture{ position:absolute; inset:0; }
+  #strategy .strat-hero img{ width:100%; height:100%; object-fit:cover; filter:saturate(1.15) brightness(1); }
+  #strategy .strat-hero-title{ position:absolute; top:clamp(24px,6vh,64px); left:clamp(20px,5vw,72px);
+    margin:0; font-family:'Inter',sans-serif; font-weight:700; letter-spacing:-0.01em;
+    font-size:clamp(28px,4.6vw,60px); line-height:1.05; color:#ffffff;
+    text-shadow:0 2px 26px rgba(0,0,0,0.65); }
 
-  /* frosted-glass panel with soft purple glow border */
-  #strategy .strat-panel{
-    background:rgba(24,14,44,0.42);
-    -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
-    border:1px solid rgba(186,85,211,0.35);
-    box-shadow:0 0 25px rgba(186,85,211,0.4), inset 0 0 34px rgba(122,43,255,0.10);
-    border-radius:22px;
+  /* LOWER · dashboard on deep-blue → dark-purple gradient */
+  #strategy .strat-dash{ perspective:1200px;
+    padding:clamp(0px,0vw,72px) clamp(18px,4vw,64px) clamp(0px,0vw,88px);
+    background:linear-gradient(180deg, #214373 0%, #202576 45%, #28124e 78%, #160a2e 100%); }
+
+  #strategy .strat-grid-top,
+  #strategy .strat-grid-bottom{ display:grid; gap:clamp(6px,1.6vw,24px); }
+  #strategy .strat-grid-top{ grid-template-columns:repeat(4,1fr); }
+  #strategy .strat-grid-bottom{ grid-template-columns:repeat(3,1fr); max-width:76%; margin:clamp(10px,3vw,36px) auto 0; }
+
+  /* CARD · glowing rounded border + dark translucent body (title on top, PNG below) */
+  #strategy .strat-card{ position:relative; border-radius:20px;
+    background:rgba(10,14,28,0.52); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    border:1px solid var(--glow,#00f3ff);
+    box-shadow:0 0 16px var(--glow,#00f3ff), inset 0 0 26px var(--glow,#00f3ff);
+    transform-style:preserve-3d; will-change:transform;
+    animation:stratBorderPulse 3.2s ease-in-out infinite;
+    animation-delay:calc(var(--i,0) * 0.18s); }
+  @keyframes stratBorderPulse{
+    0%,100%{ box-shadow:0 0 12px var(--glow,#00f3ff), inset 0 0 20px var(--glow,#00f3ff); }
+    50%{ box-shadow:0 0 30px var(--glow,#00f3ff), inset 0 0 34px var(--glow,#00f3ff); }
+  }
+  #strategy .strat-card-img{ position:relative; border-radius:14px; overflow:hidden;
+    background:rgba(255,255,255,0.04); }
+  #strategy .strat-card-img img{ display:block; width:100%; height:auto; object-fit:contain; border-radius:14px; }
+
+  /* tablet · 2×2 fallback before stacking */
+  @media (min-width: 769px) and (max-width: 1024px){
+    /* #strategy .strat-grid-top{ grid-template-columns:repeat(2,1fr); }
+    #strategy .strat-grid-bottom{ grid-template-columns:repeat(2,1fr); max-width:100%; margin-top:18px; } */
   }
 
-  #strategy .strat-eyebrow{ font-family:'JetBrains Mono',monospace; font-size:11px;
-    letter-spacing:0.3em; text-transform:uppercase; color:#00f3ff; opacity:0.85;
-    text-shadow:0 0 10px rgba(0,243,255,0.5); margin-bottom:10px; }
-  #strategy .strat-title{ font-family:'Bricolage Grotesque',sans-serif; font-weight:700;
-    letter-spacing:0.02em; color:#F3F1EC; margin-bottom:26px; }
-  #strategy .strat-title span{ background:linear-gradient(100deg,#00f3ff 0%,#ff0055 55%,#7a2bff 100%);
-    -webkit-background-clip:text; background-clip:text; color:transparent; }
-
-  #strategy .strat-item{
-    position:relative; display:flex; align-items:center; gap:16px; cursor:pointer;
-    transition:transform .35s ease, box-shadow .35s ease, background .35s ease;
-    font-size: 8rem;
-    font-weight: bold;
-    color: transparent;
-    background-image: url('https://images.unsplash.com/photo-1732535725600-f805d8b33c9c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); 
-    background-size: 200%; /* Enlarged for smooth animation */
-    background-position: 0 50%;
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: animate-background 5s infinite alternate linear;
-  }
-  @keyframes animate-background {
-    0% {
-      background-position: 0 50%;
-    }
-    100% {
-      background-position: 100% 50%;
-    }
-  }
-  #strategy .strat-ico{ flex:0 0 auto; width:16px; height:16px; border-radius:50%;
-    border:1.5px solid rgba(186,85,211,0.95);
-    background:radial-gradient(circle at 35% 35%, #b388ff 0%, #7a2bff 55%, #3b0f66 100%);
-    box-shadow:0 0 10px rgba(186,85,211,0.9), 0 0 22px rgba(186,85,211,0.5);
-    animation:stratIcoPulse 2.6s ease-in-out infinite; }
-  @keyframes stratIcoPulse{
-    0%,100%{ box-shadow:0 0 8px rgba(186,85,211,0.7), 0 0 18px rgba(186,85,211,0.4); }
-    50%{ box-shadow:0 0 14px rgba(186,85,211,1), 0 0 30px rgba(186,85,211,0.7); }
-  }
-
-  #strategy .strat-txt{ font-family:'Inter',sans-serif; color:#ffffff; font-weight:600;
-    letter-spacing:0.01em; line-height:1.15; }
-
-  #strategy .strat-line{ position:absolute; left:0; bottom:-1px; height:2px; width:100%;
-    transform:scaleX(0); transform-origin:left; border-radius:2px;
-    background:linear-gradient(90deg,#7a2bff 0%,#00f3ff 100%);
-    box-shadow:0 0 10px rgba(186,85,211,0.9), 0 0 24px rgba(0,243,255,0.5); }
-
-  /* DESKTOP · panel on the LEFT, 5 horizontal rows */
-  @media (min-width: 769px){
-    #strategy .strat-wrap{ display:flex; align-items:center; min-height:100vh; }
-    #strategy .strat-panel{ width:min(560px,32vw); margin-left:clamp(24px,9vw,140px);
-      padding:clamp(30px,4vw,52px) clamp(30px,4vw,52px) clamp(34px,4vw,56px); }
-    #strategy .strat-title{ font-size:clamp(30px,3.4vw,44px); }
-    #strategy .strat-list{ display:flex; flex-direction:column; gap:4px; }
-    #strategy .strat-item{ padding:15px 10px; }
-    #strategy .strat-item:hover{ transform:translateX(8px); }
-    #strategy .strat-txt{ font-size:clamp(17px,1.35vw,20px); }
-  }
-
-  /* MOBILE · tall slender container centered at top, stacked glowing buttons */
+  /* MOBILE · cards stack neatly below the banner */
   @media (max-width: 768px){
-    #strategy{ min-height: 180vh; }
-    #strategy .strat-wrap{ display:flex; flex-direction:column; align-items:center;
-      min-height:100vh; padding:clamp(84px,14vh,112px) 24px clamp(48px,8vh,80px); }
-    #strategy .strat-panel{ width:min(80vw,360px); text-align:center;
-      padding:clamp(30px,6vw,44px) clamp(20px,5vw,28px); }
-    #strategy .strat-title{ font-size:clamp(26px,7vw,34px); }
-    #strategy .strat-list{ display:flex; flex-direction:column; gap:14px; }
-    #strategy .strat-item{
-      width:100%;
-      border:1px solid rgba(186,85,211,0.55);
-      border-radius:16px;
-      padding:16px 18px;
-      /* background:rgba(122,43,255,0.16); */
-      box-shadow:0 0 18px rgba(186,85,211,0.35), inset 0 0 20px rgba(122,43,255,0.12);
-    }
-    #strategy .strat-item:hover{ background:rgba(122,43,255,0.30);
-      box-shadow:0 0 26px rgba(186,85,211,0.6), inset 0 0 24px rgba(122,43,255,0.2); }
-    #strategy .strat-txt{ font-size:1.08rem; font-weight:700; }
-    #strategy .strat-ico{ width:18px; height:18px; }
-    #strategy .strat-line{ left:14px; right:14px; bottom:8px; width:auto; }
+    #strategy .strat-hero{ min-height:50vh; }
+    #strategy .strat-grid-top,
+    /* #strategy .strat-grid-bottom{ grid-template-columns:3fr; } */
+    #strategy .strat-grid-bottom{ max-width:100%; }
+    /* #strategy .strat-card{ padding:16px; } */
   }
 
   @media (prefers-reduced-motion: reduce){
-    #strategy .strat-item, #strategy .strat-panel{ opacity:1 !important; transform:none !important; }
+    #strategy .strat-card{ animation:none !important; }
   }
 </style>
 
@@ -165,7 +112,7 @@
 <!-- ============ CYBERNETIC INTRO (combined fusion scene → particle burst → permanent centered logo) ============ -->
 <div id="cyber-intro" aria-hidden="true">
 
-  <!-- COMBINED SCENE · wallpaper backdrop + cyber eye + 3D spheres + HUD overlay -->
+  <!-- COMBINED SCENE · wallpaper backdrop + cyber eye + HUD overlay -->
   <div class="cyber-scene" id="scene-fusion">
     <div class="fusion-bg" id="fusion-bg">
       <picture>
@@ -180,9 +127,6 @@
     <div class="hud-corner c-tr"></div>
     <div class="hud-corner c-bl"></div>
     <div class="hud-corner c-br"></div>
-
-    <!-- <div class="hud-readout ro-1">SYS.AURORA // SEC-CLEARANCE 7</div>
-    <div class="hud-readout ro-2">GRID 04 · NODE 117</div> -->
 
     <div class="hud-graph">
       <svg viewBox="0 0 220 70" preserveAspectRatio="none">
@@ -215,12 +159,6 @@
         <img id="cyber-eye-img" src="./imgs/cyber-eye.png" alt="Biometric iris scan">
         <div class="scan-beam"></div>
       </div>
-      <div class="sphere-orb" id="sphere-pc-orb">
-        <img class="sphere" id="sphere-pc" src="./imgs/point-cloud-sphere.jpeg" alt="">
-      </div>
-      <div class="sphere-orb" id="sphere-mesh-orb">
-        <img class="sphere" id="sphere-mesh" src="./imgs/mesh-sphere-3d.png" alt="">
-      </div>
       <div class="reticle">
         <span class="ring r1"></span>
         <span class="ring r2"></span>
@@ -244,16 +182,6 @@
     <div id="logo-tilt">
       <div id="logo-spin">
         <div class="logo-slot">
-          <svg class="logo-slot-ring" viewBox="0 0 100 100">
-            <defs>
-              <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#00f3ff"/><stop offset="100%" stop-color="#ff0055"/>
-              </linearGradient>
-            </defs>
-            <circle class="ring-solid" cx="50" cy="50" r="48"/>
-            <circle class="ring-dashed" cx="50" cy="50" r="41"/>
-            <circle class="ring-outer" cx="50" cy="50" r="33"/>
-          </svg>
           <div class="logo-slot-fill">
             <img id="brand-logo" src="./imgs/logo-2k-without-background.png" alt="Aurora Media logo">
           </div>
@@ -357,45 +285,49 @@
   </div>
 </section>
 
-<!-- ============ SECTION 2 · STRATEGIC SERVICES ============ -->
-<section id="strategy" class="relative min-h-screen overflow-hidden">
+<!-- ============ SECTION 2 · STRATEGY & MARKET RESEARCH DASHBOARD ============ -->
+<section id="strategy" class="relative overflow-hidden">
 
-  <div class="strat-bg">
+  <!-- UPPER · full-width hero banner -->
+  <div class="strat-hero">
     <picture>
-      <source media="(max-width: 768px)" srcset="./imgs/wallpaper-mobile.png">
-      <img src="./imgs/wallpaper-desktop.png" alt="">
+      <source media="(max-width: 768px)" srcset="./imgs/wallpaper-page2.jpg">
+      <img src="./imgs/wallpaper-page2.jpg" alt="">
     </picture>
   </div>
-  <div class="strat-wrap">
-    <div class="strat-panel">
-      <ul class="strat-list">
-        <li class="strat-item" style="--i:0">
-          <span class="strat-ico" aria-hidden="true"></span>
-          <span class="strat-txt">Market Research</span>
-          <span class="strat-line" aria-hidden="true"></span>
-        </li>
-        <li class="strat-item" style="--i:1">
-          <span class="strat-ico" aria-hidden="true"></span>
-          <span class="strat-txt">Competitor Analysis</span>
-          <span class="strat-line" aria-hidden="true"></span>
-        </li>
-        <li class="strat-item" style="--i:2">
-          <span class="strat-ico" aria-hidden="true"></span>
-          <span class="strat-txt">Business Assessment</span>
-          <span class="strat-line" aria-hidden="true"></span>
-        </li>
-        <li class="strat-item" style="--i:3">
-          <span class="strat-ico" aria-hidden="true"></span>
-          <span class="strat-txt">Strategic Recommendations</span>
-          <span class="strat-line" aria-hidden="true"></span>
-        </li>
-        <li class="strat-item" style="--i:4">
-          <span class="strat-ico" aria-hidden="true"></span>
-          <span class="strat-txt">Growth Consultation</span>
-          <span class="strat-line" aria-hidden="true"></span>
-        </li>
-      </ul>
+
+  <!-- LOWER · interactive dashboard grid -->
+  <div class="strat-dash">
+
+    <!-- TOP ROW · 4 cards -->
+    <div class="strat-grid-top">
+      <article class="strat-card" style="--glow:#00f3ff; --i:0">
+        <div class="strat-card-img"><img src="./imgs/f2.png" alt="Market Research"></div>
+      </article>
+      <article class="strat-card" style="--glow:#ff2b4a; --i:1">
+        <div class="strat-card-img"><img src="./imgs/f4.png" alt="Competitor Analysis"></div>
+      </article>
+      <article class="strat-card" style="--glow:#3b6fff; --i:2">
+        <div class="strat-card-img"><img src="./imgs/f3.png" alt="Business Assessment"></div>
+      </article>
+      <article class="strat-card" style="--glow:#ffb01f; --i:3">
+        <div class="strat-card-img"><img src="./imgs/f5.png" alt="Market Opportunity Analysis"></div>
+      </article>
     </div>
+
+    <!-- BOTTOM ROW · 3 cards -->
+    <div class="strat-grid-bottom">
+      <article class="strat-card" style="--glow:#a855f7; --i:4">
+        <div class="strat-card-img"><img src="./imgs/f7.png" alt="Strategic Recommendations"></div>
+      </article>
+      <article class="strat-card" style="--glow:#2dd4bf; --i:5">
+        <div class="strat-card-img"><img src="./imgs/f6.png" alt="Growth Consultation"></div>
+      </article>
+      <article class="strat-card" style="--glow:#ff3ec8; --i:6">
+        <div class="strat-card-img"><img src="./imgs/f1.png" alt="Business & Market Insights"></div>
+      </article>
+    </div>
+
   </div>
 
 </section>
@@ -499,28 +431,37 @@
 
 <script src="main.js"></script>
 <script>
-  /* ============ SECTION 2 · STRATEGIC SERVICES entrance ============ */
+  /* ============ SECTION 2 · STRATEGY DASHBOARD entrance + tilt ============ */
   (function(){
     var strat = document.getElementById('strategy');
     if(!strat || typeof gsap === 'undefined') return;
-    var items = strat.querySelectorAll('.strat-item');
-    var panel = strat.querySelector('.strat-panel');
-    if(!panel || !items.length) return;
-
+    var cards = strat.querySelectorAll('.strat-card');
+    if(!cards.length) return;
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    gsap.from(panel, {
-      autoAlpha: 0, y: 34, duration: 0.9, ease: 'power3.out',
-      scrollTrigger: { trigger: '#strategy', start: 'top 75%', once: true }
+    gsap.from('.strat-hero', {
+      autoAlpha: 0, scale: 1.05, duration: 1.1, ease: 'power2.out',
+      scrollTrigger: { trigger: '#strategy', start: 'top 80%', once: true }
     });
-    gsap.from(items, {
-      y: 26, autoAlpha: 0, duration: 0.65, stagger: 0.1, ease: 'power3.out',
-      scrollTrigger: { trigger: '#strategy .strat-list', start: 'top 82%', once: true }
+    gsap.from(cards, {
+      y: 36, autoAlpha: 0, scale: 0.94, duration: 0.7, stagger: 0.08, ease: 'power3.out',
+      scrollTrigger: { trigger: '.strat-dash', start: 'top 82%', once: true }
     });
-    gsap.fromTo('.strat-line', { scaleX: 0 }, {
-      scaleX: 1, duration: 0.85, stagger: 0.1, ease: 'power2.out', delay: 0.35,
-      scrollTrigger: { trigger: '#strategy .strat-list', start: 'top 82%', once: true }
-    });
+
+    if(window.matchMedia('(pointer:fine)').matches){
+      cards.forEach(function(card){
+        var rx = gsap.quickTo(card, 'rotationX', { duration: 0.4, ease: 'power2.out' });
+        var ry = gsap.quickTo(card, 'rotationY', { duration: 0.4, ease: 'power2.out' });
+        card.addEventListener('pointermove', function(e){
+          var r = card.getBoundingClientRect();
+          var px = (e.clientX - r.left) / r.width;
+          var py = (e.clientY - r.top) / r.height;
+          ry((px - 0.5) * 10);
+          rx((0.5 - py) * 10);
+        });
+        card.addEventListener('pointerleave', function(){ rx(0); ry(0); });
+      });
+    }
   })();
 </script>
 </body>
