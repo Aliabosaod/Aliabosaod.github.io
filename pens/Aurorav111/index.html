@@ -52,7 +52,7 @@
   #strategy{ background:linear-gradient(180deg, #214373 0%, #202576 45%, #28124e 78%, #160a2e 100%); }
 
   /* UPPER · full-width hero banner (title only, no overlays) */
-  #strategy .strat-hero{ position:relative; width:100%; min-height:100vh; overflow:hidden; }
+  #strategy .strat-hero{ position:relative; width:100%; min-height:130vh; overflow:hidden; }
   #strategy .strat-hero picture{ position:absolute; inset:0; }
   #strategy .strat-hero img{ width:100%; height:100%; object-fit:cover; filter:saturate(1.15) brightness(1); }
   #strategy .strat-hero-title{ position:absolute; top:clamp(24px,6vh,64px); left:clamp(20px,5vw,72px);
@@ -62,39 +62,64 @@
 
   /* LOWER · dashboard on deep-blue → dark-purple gradient */
   #strategy .strat-dash{ perspective:1200px;
-    padding:clamp(0px,0vw,72px) clamp(18px,4vw,64px) clamp(0px,0vw,88px);
+    padding:clamp(10px,0vw,72px) clamp(18px,4vw,64px) clamp(15px,0vw,88px);
     background:linear-gradient(180deg, #214373 0%, #202576 45%, #28124e 78%, #160a2e 100%); }
 
   #strategy .strat-grid-top,
   #strategy .strat-grid-bottom{ display:grid; gap:clamp(6px,1.6vw,24px); }
   #strategy .strat-grid-top{ grid-template-columns:repeat(4,1fr); }
-  #strategy .strat-grid-bottom{ grid-template-columns:repeat(3,1fr); max-width:76%; margin:clamp(10px,3vw,36px) auto 0; }
+  #strategy .strat-grid-bottom{ grid-template-columns:repeat(3,1fr); max-width:76%; margin:clamp(10px,0vw,36px) auto 0; }
 
   /* CARD · glowing rounded border + dark translucent body (title on top, PNG below) */
   #strategy .strat-card{ position:relative; border-radius:20px;
-    background:rgba(10,14,28,0.52); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    /* background:rgba(10,14,28,0.52); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
     border:1px solid var(--glow,#00f3ff);
     box-shadow:0 0 16px var(--glow,#00f3ff), inset 0 0 26px var(--glow,#00f3ff);
     transform-style:preserve-3d; will-change:transform;
     animation:stratBorderPulse 3.2s ease-in-out infinite;
-    animation-delay:calc(var(--i,0) * 0.18s); }
-  @keyframes stratBorderPulse{
+    animation-delay:calc(var(--i,0) * 0.18s); */
+  }
+  /* @keyframes stratBorderPulse{
     0%,100%{ box-shadow:0 0 12px var(--glow,#00f3ff), inset 0 0 20px var(--glow,#00f3ff); }
     50%{ box-shadow:0 0 30px var(--glow,#00f3ff), inset 0 0 34px var(--glow,#00f3ff); }
+  } */
+  #strategy .strat-card-img{
+    position:relative;
+    border-radius:14px;
+    overflow:hidden;
+    /* background:rgba(255,255,255,0.04); */
   }
-  #strategy .strat-card-img{ position:relative; border-radius:14px; overflow:hidden;
-    background:rgba(255,255,255,0.04); }
   #strategy .strat-card-img img{ display:block; width:100%; height:auto; object-fit:contain; border-radius:14px; }
 
   /* tablet · 2×2 fallback before stacking */
   @media (min-width: 769px) and (max-width: 1024px){
+    #strategy .strat-hero{ min-height:90vh; }
     /* #strategy .strat-grid-top{ grid-template-columns:repeat(2,1fr); }
     #strategy .strat-grid-bottom{ grid-template-columns:repeat(2,1fr); max-width:100%; margin-top:18px; } */
   }
 
-  /* MOBILE · cards stack neatly below the banner */
+  /* Small MOBILE · Strategy Background */
+  @media (max-width: 375px){
+    #strategy .strat-hero{ min-height:40vh; }
+  }
+
+  /* Medium MOBILE · Strategy Background */
+  @media (max-width: 425px){
+    #strategy .strat-hero{ min-height:45vh; }
+  }
+
+  /* Large MOBILE · Strategy Background */
   @media (max-width: 768px){
     #strategy .strat-hero{ min-height:50vh; }
+  }
+
+  /* Tablet · Strategy Background */
+  @media (max-width: 1024px){
+    #strategy .strat-hero{ min-height:90vh; }
+  }
+
+  /* MOBILE · cards stack neatly below the banner */
+  @media (max-width: 767px){
     #strategy .strat-grid-top,
     /* #strategy .strat-grid-bottom{ grid-template-columns:3fr; } */
     #strategy .strat-grid-bottom{ max-width:100%; }
